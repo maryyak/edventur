@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import {BrowserRouter} from "react-router-dom";
+import AppRouter from "./components/AppRouter";
+import {Layout} from 'antd';
+import SideMenu from "./components/SideMenu/SideMenu";
+
+const {Header, Footer} = Layout;
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <BrowserRouter>
+            <Layout>
+                <SideMenu/>
+                <Layout>
+                    <Header>Header</Header>
+                    <Layout.Content>
+                        <AppRouter/>
+                    </Layout.Content>
+                    <Footer>Footer</Footer>
+                </Layout>
+            </Layout>
+        </BrowserRouter>
+    );
 }
 
 export default App;
