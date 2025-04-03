@@ -121,14 +121,19 @@ const HomePage = () => {
 
 
             <Flex style={{backgroundColor: "#D4EED7"}}>
-                <Flex vertical style={{padding:100}}>
+                <Flex vertical style={{padding: 100}}>
                     <Typography.Title level={2} >Начните с бесплатной регистрации!</Typography.Title>
                     <Flex gap={20}>
-                        <Button style={{backgroundColor:" #318d25", color:"#fff"}}>Регистрация</Button>
-                        <Button style={{backgroundColor:" #318d25", color:"#fff"}}>Вход</Button>
+                        <Button style={{backgroundColor: " #318d25", color: "#fff"}}>Регистрация</Button>
+                        <Button style={{backgroundColor: " #318d25", color: "#fff"}}>Вход</Button>
                     </Flex>
                 </Flex>
-                <img src="/homepage_img.png" alt="student" style={{ width: 304, marginRight:74}} />
+                <img
+                    src="/homepage_img.png"
+                    alt="student"
+                    style={{width: 346, marginRight: 74}}
+                />
+
             </Flex>
 
 
