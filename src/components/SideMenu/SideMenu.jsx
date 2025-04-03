@@ -23,7 +23,7 @@ const menuItems = [
         label: 'Подать заявку',
     },
     {
-        key: '/2',
+        key: '/programs',
         icon: <ReadOutlined/>,
         label: 'Образовательные программы',
     },
@@ -47,13 +47,15 @@ const SideMenu = () => {
     };
 
     return (
-        <Layout.Sider width="360px" className={styles.siderMenu}>
-            <Flex vertical gap={50}>
-                <Logo/>
-                <Menu
-                    onClick={(event) => onClick(event)}
-                    selectedKeys={[location.pathname]}
-                    items={menuItems}/>
+        <Layout.Sider width="360px">
+            <Flex vertical justify={"space-between"} className={styles.siderMenu}>
+                <Flex vertical gap={50}>
+                    <Logo/>
+                    <Menu
+                        onClick={(event) => onClick(event)}
+                        selectedKeys={[location.pathname]}
+                        items={menuItems}/>
+                </Flex>
                 <Button
                     variant="outlined"
                     color="primary"

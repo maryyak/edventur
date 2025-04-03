@@ -12,7 +12,7 @@ function App() {
                 <SideMenu/>
                 <Layout>
                     <Header>Header</Header>
-                    <Layout.Content>
+                    <Layout.Content style={{padding: '32px'}}>
                         <AppRouter/>
                     </Layout.Content>
                     <Footer>Footer</Footer>
