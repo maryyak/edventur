@@ -70,7 +70,7 @@ const HomePage = () => {
                     <Typography.Title level={1}>
                         Добро пожаловать <span style={{ color: "#08A652" }}>в Edventure</span>
                     </Typography.Title>
-                    <Typography.Text >
+                    <Typography.Text id='about' >
                         Цифровая интерактивная академическая платформа для участия в программах внутрисоссийского
                         семестрового обмена
                     </Typography.Text>
@@ -139,7 +139,7 @@ const HomePage = () => {
 
             <Flex gap={37}>
                 <Flex vertical>
-                    <Typography.Title level={2}>Отвечаем на частые вопросы</Typography.Title>
+                    <Typography.Title level={2} id='faq'>Отвечаем на частые вопросы</Typography.Title>
                     <Button  style={{
                         backgroundColor: "#318d25",
                         color: "#fff",
