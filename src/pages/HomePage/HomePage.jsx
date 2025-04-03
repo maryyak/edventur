@@ -64,7 +64,7 @@ const items: CollapseProps["items"] = [
 const HomePage = () => {
 
     return (
-        <Flex vertical  gap={100} style={{ padding: 103, backgroundColor: "#e6f0e4" }}>
+        <Flex vertical  gap={100} style={{ padding: 103}}>
             <Flex  align="center" gap={41} justify="space-between">
                 <div>
                     <Typography.Title level={1}>
