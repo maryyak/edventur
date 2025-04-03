@@ -107,7 +107,7 @@ const HomePage = () => {
                     items={steps.map(() => ({ title: "", description: "" }))}
                 />
                 {steps.map((step, index) => (
-                    <Card key={index} title={step.title} style={{ width: 300 }}>
+                    <Card key={index} title={step.title} style={{ width: 280 }}>
                         <Typography.Text>{step.description}</Typography.Text>
                         <img
                             src={step.image}
