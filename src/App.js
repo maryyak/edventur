@@ -2,8 +2,8 @@ import {BrowserRouter} from "react-router-dom";
 import AppRouter from "./components/AppRouter";
 import {Layout} from 'antd';
 import SideMenu from "./components/SideMenu/SideMenu";
-
-const {Header, Footer} = Layout;
+import Footer from "./components/Footer/Footer";
+const {Header} = Layout;
 
 function App() {
     return (
@@ -15,7 +15,7 @@ function App() {
                     <Layout.Content style={{padding: '32px'}}>
                         <AppRouter/>
                     </Layout.Content>
-                    <Footer>Footer</Footer>
+                    <Footer/>
                 </Layout>
             </Layout>
         </BrowserRouter>
