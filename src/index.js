@@ -10,8 +10,8 @@ import "@fontsource/montserrat/700.css";
 const theme = {
     token: {
         fontFamily: "Montserrat, sans-serif",
-        colorPrimary: "#78258D", // Основной цвет
-        colorPrimaryBg: "#EFEFFF",
+        colorPrimary: "#08a652", // Основной цвет
+        colorPrimaryBg: "#f1f5f2",
         colorBgLayout: "none",
     },
     components: {
