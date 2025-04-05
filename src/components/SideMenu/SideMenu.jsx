@@ -2,11 +2,10 @@ import React from 'react';
 import {Button, Flex, Layout, Menu} from "antd";
 import styles from "./SideMenu.module.scss"
 import {
-    BookOutlined,
     HomeOutlined, PhoneOutlined,
     ReadOutlined,
     SettingOutlined,
-    SolutionOutlined
+    SolutionOutlined, StarOutlined
 } from "@ant-design/icons";
 import {useLocation, useNavigate} from "react-router-dom";
 import Logo from "../Logo";
@@ -18,19 +17,19 @@ const menuItems = [
         label: 'Главная',
     },
     {
-        key: '/1',
-        icon: <SolutionOutlined/>,
-        label: 'Подать заявку',
-    },
-    {
         key: '/programs',
         icon: <ReadOutlined/>,
         label: 'Образовательные программы',
     },
     {
+        key: '/recommendations',
+        icon: <StarOutlined/>,
+        label: 'Индивидуальный подбор',
+    },
+    {
         key: '/3',
-        icon: <BookOutlined/>,
-        label: 'ВУЗы-партнеры',
+        icon: <SolutionOutlined/>,
+        label: 'Мои заявки',
     },
     {
         key: '/4',
@@ -50,7 +49,7 @@ const SideMenu = () => {
         <Layout.Sider width="360px">
             <Flex vertical justify={"space-between"} className={styles.siderMenu}>
                 <Flex vertical gap={50}>
-                    <Logo/>
+                    <Logo style={{padding:'0 16px'}} color={'#08A652'} />
                     <Menu
                         onClick={(event) => onClick(event)}
                         selectedKeys={[location.pathname]}

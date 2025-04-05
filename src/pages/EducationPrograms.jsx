@@ -1,4 +1,7 @@
-import {Button, Card, Col, Descriptions, Divider, Flex, Row, Select, Space, Typography} from "antd";
+import {Button, Card, Col, Descriptions, Divider, Flex, Row, Select, Space} from "antd";
+import {useState} from "react";
+import {StarOutlined} from "@ant-design/icons";
+import {Link} from "react-router-dom";
 
 const programs = [
     {
@@ -52,42 +55,64 @@ const universities = [
 ]
 
 const EducationPrograms = () => {
-    const groupedByUniversity = programs.reduce((acc, item) => {
-        if (!acc[item.university]) {
-            acc[item.university] = [];
-        }
-        acc[item.university].push(item);
+    const [selectedUniversity, setSelectedUniversity] = useState(null);
+    const [selectedLevel, setSelectedLevel] = useState(null);
+    const [selectedForm, setSelectedForm] = useState(null);
+
+    // Фильтрация программ по выбранным критериям
+    const filteredPrograms = programs.filter(program =>
+        (!selectedUniversity || program.university === selectedUniversity) &&
+        (!selectedLevel || program.level === selectedLevel) &&
+        (!selectedForm || program.form === selectedForm)
+    );
+
+    // Группировка отфильтрованных программ по университетам
+    const groupedByUniversity = filteredPrograms.reduce((acc, program) => {
+        if (!acc[program.university]) acc[program.university] = [];
+        acc[program.university].push(program);
         return acc;
     }, {});
 
+    const universityOptions = universities.map((uni) => ({
+        label: uni,
+        value: uni,
+    }));
+
     return (
-        <>
+        <Flex vertical gap={16}>
             <Space wrap>
                 <Select
-                    defaultValue="ВУЗ"
-                    style={{ width: 120 }}
-                    options={universities}
-                />
-                <Select
-                    defaultValue="lucy"
-                    style={{ width: 120 }}
-                    disabled
-                    options={[{ value: 'lucy', label: 'Lucy' }]}
-                />
-                <Select
-                    defaultValue="lucy"
-                    style={{ width: 120 }}
-                    loading
-                    options={[{ value: 'lucy', label: 'Lucy' }]}
-                />
-                <Select
-                    defaultValue="lucy"
-                    style={{ width: 120 }}
+                    placeholder="ВУЗ"
+                    style={{width: 120}}
                     allowClear
-                    options={[{ value: 'lucy', label: 'Lucy' }]}
-                    placeholder="select it"
+                    options={universityOptions}
+                    onChange={setSelectedUniversity}
+                />
+                <Select
+                    placeholder="Уровень обучения"
+                    style={{width: 200}}
+                    allowClear
+                    onChange={setSelectedLevel}
+                    options={[
+                        {value: "Бакалавриат", label: "Бакалавриат"},
+                        {value: "Магистратура", label: "Магистратура"},
+                    ]}
+                />
+                <Select
+                    placeholder="Форма обучения"
+                    style={{width: 200}}
+                    allowClear
+                    onChange={setSelectedForm}
+                    options={[
+                        {value: "Очная", label: "Очная"},
+                        {value: "Очно-заочная", label: "Очно-заочная"},
+                        {value: "Заочная", label: "Заочная"},
+                    ]}
                 />
             </Space>
+            <Button type={"primary"} icon={<StarOutlined/>} style={{width: "fit-content"}}>
+                <Link to={"/recommendations"}>Подобрать при помощи Искусственного Интеллекта</Link>
+            </Button>
             {Object.entries(groupedByUniversity).map(([university, programs], i) => (
                 <Row gutter={16} key={i}>
                     <Divider orientation="left">{university}</Divider>
@@ -104,8 +129,12 @@ const EducationPrograms = () => {
                                         <Descriptions.Item label="Форма обучения">{program.form}</Descriptions.Item>
                                     </Descriptions>
                                     <Flex gap={16}>
-                                        <Button type="primary">Подать заявку</Button>
-                                        <Button>Узнать подробнее</Button>
+                                        <Button type="primary">
+                                            Подать заявку
+                                        </Button>
+                                        <Button>
+                                            <Link to={`/programs/${program.id}`}>Узнать подробнее</Link>
+                                        </Button>
                                     </Flex>
                                 </Flex>
                             </Card>
@@ -113,7 +142,7 @@ const EducationPrograms = () => {
                     ))}
                 </Row>
             ))}
-        </>
+        </Flex>
     );
 };
 

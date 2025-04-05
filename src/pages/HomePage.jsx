@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import {Typography, Row, Col, Card, Avatar, Flex, Steps, Button, Collapse} from "antd";
-import styles from "./HomePage.module.scss";
-import type { CollapseProps } from "antd/es/collapse";
 const universities = [
     { id: 1, name: "РТУ МИРЭА", logo: "/MIREA_GERB.png" },
     { id: 2, name: "РТУ МИРЭА", logo: "/MIREA_GERB.png" },
@@ -28,7 +26,7 @@ const steps = [
     },
 ];
 
-const items: CollapseProps["items"] = [
+const items = [
     {
         key: "1",
         label: "Что такое Edventure?",
@@ -75,7 +73,7 @@ const HomePage = () => {
                         семестрового обмена
                     </Typography.Text>
                 </div>
-                <img src="/sberkot.png" alt="Edventure Mascot" className={styles.mascot} />
+                <img src="/sberkot.png" alt="Edventure Mascot" />
             </Flex>
 
             <Card>
