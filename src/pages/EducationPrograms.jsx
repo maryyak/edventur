@@ -1,66 +1,46 @@
-import {Button, Card, Col, Descriptions, Divider, Flex, Row, Select, Space} from "antd";
-import {useState} from "react";
-import {StarOutlined} from "@ant-design/icons";
+import {Button, Card, Col, Descriptions, Divider, Flex, message, Row, Select, Space, Typography, Upload} from "antd";
+import React, {useState} from "react";
+import {StarFilled, UploadOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
 
-const programs = [
-    {
-        id: 1,
-        title: "Фуллстек разработка",
-        description: "В рамках профиля ведётся подготовка специалистов, которые умеют производить разработку программного обеспечения с использованием различных языков программирования: С++, Python, Javascript, Go, C# и др., а также с применением разнообразных паттернов и фреймворков. Выпускники способны работать с ключевыми технологиями программной разработки, а потому они наиболее востребованы на IT-рынке.",
-        university: "РТУ МИРЭА", //многие ко многим должна быть связка и название будет из таблицы самого вуза брать
-        level: "Бакалавриат",
-        form: "Очная"
-    },
-    {
-        id: 2,
-        title: "Искусственный интеллект",
-        description:
-            "Программа нацелена на подготовку специалистов в области машинного обучения, анализа данных и нейронных сетей. Выпускники могут работать в сферах автоматизации, предсказательной аналитики и AI-исследований.",
-        university: "МГУ",
-        level: "Магистратура",
-        form: "Очная"
-    },
-    {
-        id: 3,
-        title: "Кибербезопасность",
-        description:
-            "Студенты изучают методы защиты информации, криптографию, анализ уязвимостей и методы предотвращения кибератак. Подготовка специалистов ведётся в тесном взаимодействии с ведущими IT-компаниями.",
-        university: "РТУ МИРЭА",
-        level: "Бакалавриат",
-        form: "Очно-заочная"
-    },
-    {
-        id: 4,
-        title: "Разработка мобильных приложений",
-        description:
-            "Обучение направлено на разработку мобильных приложений под iOS и Android с использованием современных технологий, таких как Swift, Kotlin и Flutter.",
-        university: "СПбГУ",
-        level: "Бакалавриат",
-        form: "Очная"
-    },
-    {
-        id: 5,
-        title: "Бизнес-информатика",
-        description:
-            "Программа сочетает IT и бизнес-аналитику, позволяя выпускникам заниматься разработкой и внедрением информационных систем в бизнес-процессы компаний.",
-        university: "МГУ",
-        level: "Магистратура",
-        form: "Заочная"
-    }
-]
+//c бэка приходит список программ с процентом схожести с учебным планом студента
+import {programs, universities} from "../utils/mock";
 
-const universities = [
-    "РТУ МИРЭА", "МГУ", "СПбГУ" //тоже с бэка из таблицы уников
-]
+const props = {
+    name: 'file',
+    // action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload', реализовываешь апи для загрузки файлов(можно поглядеть как в конструкторе программ сделано)
+    headers: {
+        authorization: 'authorization-text',
+    },
+    onChange(info) {
+        if (info.file.status !== 'uploading') {
+            console.log(info.file, info.fileList);
+        }
+        if (info.file.status === 'done') {
+            message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
+        }
+    },
+};
 
 const EducationPrograms = () => {
     const [selectedUniversity, setSelectedUniversity] = useState(null);
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [selectedForm, setSelectedForm] = useState(null);
 
+    const sortedPrograms = [...programs].sort((a, b) => {
+        const aBelowThreshold = a.similarity < a.min_similarity;
+        const bBelowThreshold = b.similarity < b.min_similarity;
+
+        if (aBelowThreshold !== bBelowThreshold) {
+            return aBelowThreshold ? 1 : -1;
+        }
+        return b.similarity - a.similarity;
+    });
+
     // Фильтрация программ по выбранным критериям
-    const filteredPrograms = programs.filter(program =>
+    const filteredPrograms = sortedPrograms.filter(program =>
         (!selectedUniversity || program.university === selectedUniversity) &&
         (!selectedLevel || program.level === selectedLevel) &&
         (!selectedForm || program.form === selectedForm)
@@ -110,36 +90,64 @@ const EducationPrograms = () => {
                     ]}
                 />
             </Space>
-            <Button type={"primary"} icon={<StarOutlined/>} style={{width: "fit-content"}}>
-                <Link to={"/recommendations"}>Подобрать при помощи Искусственного Интеллекта</Link>
-            </Button>
+            <Upload {...props}>
+                <Button type={"primary"} icon={<UploadOutlined/>}>Загрузите ваш учебный план</Button>
+            </Upload>
             {Object.entries(groupedByUniversity).map(([university, programs], i) => (
                 <Row gutter={16} key={i}>
                     <Divider orientation="left">{university}</Divider>
-                    {programs.map((program) => (
-                        <Col span={12} key={program.id}>
-                            <Card
-                                title={program.title}
-                            >
-                                <Flex vertical gap={16}>
-                                    <Descriptions column={1}>
-                                        <Descriptions.Item
-                                            label="Описание">{program.description.slice(0, 100)}...</Descriptions.Item>
-                                        <Descriptions.Item label="Уровень обучения">{program.level}</Descriptions.Item>
-                                        <Descriptions.Item label="Форма обучения">{program.form}</Descriptions.Item>
-                                    </Descriptions>
-                                    <Flex gap={16}>
-                                        <Button type="primary">
-                                            Подать заявку
-                                        </Button>
-                                        <Button>
-                                            <Link to={`/programs/${program.id}`}>Узнать подробнее</Link>
-                                        </Button>
+                    {programs.map((program) => {
+                        const averageRating =
+                            program.reviews && program.reviews.length > 0
+                                ? (
+                                    program.reviews.reduce((sum, review) => sum + review.rating, 0) /
+                                    program.reviews.length
+                                ).toFixed(1)
+                                : null;
+
+                        return (
+                            <Col span={12} key={program.id}>
+                                <Card
+                                    title={
+                                        <Flex justify="space-between" align="center">
+                                            {program.title}
+                                            <Flex align="center" gap={16}>
+                                                <Typography.Text
+                                                    type={program.similarity >= program.min_similarity ? "success" : "danger"}>
+                                                    Схожесть: {program.similarity * 100}%
+                                                </Typography.Text>
+                                                {averageRating && (
+                                                    <span style={{color: "#fadb14", fontSize: 16}}>
+                                                    <StarFilled/> {averageRating}
+                                                </span>
+                                                )}
+                                            </Flex>
+                                        </Flex>
+                                    }
+                                >
+                                    <Flex vertical gap={16}>
+                                        <Descriptions column={1}>
+                                            <Descriptions.Item
+                                                label="Описание">{program.description.slice(0, 100)}...</Descriptions.Item>
+                                            <Descriptions.Item
+                                                label="Уровень обучения">{program.level}</Descriptions.Item>
+                                            <Descriptions.Item label="Форма обучения">{program.form}</Descriptions.Item>
+                                        </Descriptions>
+                                        <Flex gap={16}>
+                                            <Button type="primary">
+                                                <Link to={`/request/${program.id}`}>
+                                                    Подать заявку
+                                                </Link>
+                                            </Button>
+                                            <Button>
+                                                <Link to={`/programs/${program.id}`}>Узнать подробнее</Link>
+                                            </Button>
+                                        </Flex>
                                     </Flex>
-                                </Flex>
-                            </Card>
-                        </Col>
-                    ))}
+                                </Card>
+                            </Col>
+                        )
+                    })}
                 </Row>
             ))}
         </Flex>

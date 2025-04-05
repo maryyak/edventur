@@ -5,7 +5,7 @@ import {
     HomeOutlined, PhoneOutlined,
     ReadOutlined,
     SettingOutlined,
-    SolutionOutlined, StarOutlined
+    SolutionOutlined
 } from "@ant-design/icons";
 import {useLocation, useNavigate} from "react-router-dom";
 import Logo from "../Logo";
@@ -20,11 +20,6 @@ const menuItems = [
         key: '/programs',
         icon: <ReadOutlined/>,
         label: 'Образовательные программы',
-    },
-    {
-        key: '/recommendations',
-        icon: <StarOutlined/>,
-        label: 'Индивидуальный подбор',
     },
     {
         key: '/3',

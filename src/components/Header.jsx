@@ -1,27 +1,42 @@
 import React from 'react';
-import { Badge, Flex, Layout} from "antd";
+import {Badge, Dropdown, Flex, Layout, Menu} from "antd";
 import {
-    BellFilled, UserOutlined
+    ArrowRightOutlined,
+    BellOutlined, UserOutlined
 } from "@ant-design/icons";
 import {Link} from "react-router-dom";
+import {notifications, userInfo} from "../utils/mock";
 
-
-const notifications = ['Уведомление 1', 'Уведомление 2', 'Уведомление 3', 'Уведомление 4', 'Уведомление 5'];
+//тут надо еще добавить механизм выхода из аккаунта
 const Header = () => {
-
-
+    const menu = (
+        <Menu>
+            <Menu.Item key="account">
+                <Link to="/settings">
+                    <Flex gap={16}>
+                        {userInfo.fio}
+                        <ArrowRightOutlined/>
+                    </Flex>
+                </Link>
+            </Menu.Item>
+            <Menu.Divider/>
+            <Menu.Item key="logout" danger>
+                Выйти
+            </Menu.Item>
+        </Menu>
+    );
 
     return (
         <Layout.Header>
-            <Flex gap={20} justify="flex-end" style={{marginRight: 103,marginTop: 10}}>
+            <Flex gap={20} justify="flex-end" style={{marginRight: 103, marginTop: 10}}>
                 <Link to={'/'}>
                     <Badge count={notifications.length} color="#08a652">
-                        <BellFilled style={{ fontSize: 24, color: 'gray' }} />
+                        <BellOutlined style={{fontSize: 24, color: 'gray'}}/>
                     </Badge>
                 </Link>
-                <Link to={'/'}>
-                    <UserOutlined style={{ fontSize: 24,color:"#08a652" }} />
-                </Link>
+                <Dropdown overlay={menu} trigger={['hover']} placement="bottomCenter">
+                    <UserOutlined style={{fontSize: 24, color: "#08a652", cursor: 'pointer'}}/>
+                </Dropdown>
             </Flex>
         </Layout.Header>
     );
