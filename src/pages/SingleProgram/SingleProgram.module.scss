@@ -1,11 +1,21 @@
-.tag{
+.tag {
   width: fit-content;
   font-size: 16px;
   padding: 5px 20px;
 }
 
-.shortDescription{
+.shortDescription {
   background: #f6ffed;
   padding: 40px;
   width: fit-content;
+}
+
+.reviewsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.banner{
+  padding: 65px;
 }

@@ -21,3 +21,11 @@ h1 {
   font-weight: 900;
 }
 
+main {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+}
+

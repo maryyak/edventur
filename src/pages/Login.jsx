@@ -5,7 +5,7 @@ import {
     Form,
     Input, Typography,
 } from 'antd';
-import Logo from "../../components/Logo";
+import Logo from "../components/Logo";
 
 const Login = () => {
     const [form] = Form.useForm();
@@ -13,7 +13,7 @@ const Login = () => {
     return (
         <Flex gap={106} style={{justifyContent: 'center'}}>
             <Flex vertical >
-                <Logo/>
+                <Logo color={'#08A652'}/>
                 <Typography.Title level={1}>Вход в кабинет</Typography.Title>
                 <Typography.Text type="secondary">Ура! Вы снова с нами!</Typography.Text>
 

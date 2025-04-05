@@ -32,7 +32,7 @@ const menuItems = [
         label: 'Мои заявки',
     },
     {
-        key: '/4',
+        key: '/settings',
         icon: <SettingOutlined/>,
         label: 'Настройки аккаунта',
     },

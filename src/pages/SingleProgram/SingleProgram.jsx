@@ -1,7 +1,8 @@
 import React from 'react';
-import {Avatar, Card, Collapse, Descriptions, Flex, List, Rate, Table, Tag, Typography} from "antd";
+import {Avatar, Button, Card, Col, Collapse, Descriptions, Flex, Rate, Row, Table, Tag, Typography} from "antd";
 import styles from "./SingleProgram.module.scss"
 import {UserOutlined} from "@ant-design/icons";
+import {Link} from "react-router-dom";
 
 //с бэка по айди программа(айди берем из ссылки через useParams(аналогичное есть в конструкторе нашем)
 const program = {
@@ -144,9 +145,40 @@ const program = {
     ]
 }
 
+//Вот это должно через нейронку прокидываться и выдавать программы, подходящие пользователю(если прям в идеале то те, которые могут понравиться пользователю, если ему понравилась текущая, которую он просматривает)
+const programs = [
+    {
+        id: 2,
+        title: "Искусственный интеллект",
+        description:
+            "Программа нацелена на подготовку специалистов в области машинного обучения, анализа данных и нейронных сетей. Выпускники могут работать в сферах автоматизации, предсказательной аналитики и AI-исследований.",
+        university: "МГУ",
+        level: "Магистратура",
+        form: "Очная"
+    },
+    {
+        id: 3,
+        title: "Кибербезопасность",
+        description:
+            "Студенты изучают методы защиты информации, криптографию, анализ уязвимостей и методы предотвращения кибератак. Подготовка специалистов ведётся в тесном взаимодействии с ведущими IT-компаниями.",
+        university: "РТУ МИРЭА",
+        level: "Бакалавриат",
+        form: "Очно-заочная"
+    },
+    {
+        id: 4,
+        title: "Разработка мобильных приложений",
+        description:
+            "Обучение направлено на разработку мобильных приложений под iOS и Android с использованием современных технологий, таких как Swift, Kotlin и Flutter.",
+        university: "СПбГУ",
+        level: "Бакалавриат",
+        form: "Очная"
+    }
+]
+
 const SingleProgram = () => {
     return (
-        <Flex vertical>
+        <Flex vertical gap={30}>
             <Typography.Title>{program.title}</Typography.Title>
             <Flex gap={30} style={{width: "100%"}} align="center">
                 <Flex vertical gap={30}>
@@ -202,31 +234,64 @@ const SingleProgram = () => {
                     </Collapse.Panel>
                 ))}
             </Collapse>
-            <Typography.Title level={2}>Отзывы о программе</Typography.Title>
-            <List
-                grid={{
-                    gutter: 15,
-                    column: 2
-                }}
-                dataSource={program.reviews}
-                renderItem={(review) => (
-                    <List.Item>
-                        <Card style={{marginBottom: 15}}>
-                            <Flex justify="space-between" align="center">
-                                <List.Item.Meta
-                                    avatar={<Avatar icon={<UserOutlined/>}/>}
-                                    title={<Typography.Text strong>{review.name} ({review.year} курс)</Typography.Text>}
-                                    description={<Typography.Text
-                                        type="secondary">{new Date(review.date).toLocaleDateString()}</Typography.Text>}
-                                />
-                                <Rate disabled defaultValue={review.rating}/>
+            <Flex justify="space-between" align="center">
+                <Typography.Title level={2}>Отзывы о программе</Typography.Title>
+                <Button color="primary" variant="outlined">Оставить отзыв</Button>
+            </Flex>
+            <div className={styles.reviewsGrid}>
+                {program.reviews.map((review) => (
+                    <Card>
+                        <Flex justify="space-between" align="center">
+                            <Flex gap={16} align="center">
+                                <Avatar icon={<UserOutlined/>}/>
+                                <Flex vertical>
+                                    <Typography.Text strong>{review.name} ({review.year} курс)</Typography.Text>
+                                    <Typography.Text
+                                        type="secondary">{new Date(review.date).toLocaleDateString()}</Typography.Text>
+                                </Flex>
                             </Flex>
-                            <Typography.Text
-                                style={{display: "block", marginTop: 10, height: "100%"}}>{review.comment}</Typography.Text>
+                            <Rate disabled defaultValue={review.rating}/>
+                        </Flex>
+                        <Typography.Text
+                            style={{display: "block", marginTop: 16, height: "100%"}}>{review.comment}</Typography.Text>
+                    </Card>
+                ))}
+            </div>
+            <Typography.Title level={2}>Возможно вас заинтересуют</Typography.Title>
+            <Row gutter={16}>
+                {programs.map((program) => (
+                    <Col span={8} key={program.id}>
+                        <Card
+                            title={program.title}
+                            style={{background: "#f6ffed"}}
+                        >
+                            <Flex vertical gap={16}>
+                                <Descriptions column={1}>
+                                    <Descriptions.Item
+                                        label="Описание">{program.description.slice(0, 100)}...</Descriptions.Item>
+                                    <Descriptions.Item label="Уровень обучения">{program.level}</Descriptions.Item>
+                                    <Descriptions.Item label="Форма обучения">{program.form}</Descriptions.Item>
+                                </Descriptions>
+                                <Flex gap={16}>
+                                    <Button type="primary">
+                                        Подать заявку
+                                    </Button>
+                                    <Button>
+                                        <Link to={`/programs/${program.id}`}>Узнать подробнее</Link>
+                                    </Button>
+                                </Flex>
+                            </Flex>
                         </Card>
-                    </List.Item>
-                )}
-            />
+                    </Col>
+                ))}
+            </Row>
+            <Flex className={styles.banner} justify="center" align="center" gap={100}>
+                <Flex vertical gap={30}>
+                    <Typography.Title level={2}>Хочешь подать заявку на обучение?</Typography.Title>
+                    <Button type="primary">Подать заявку</Button>
+                </Flex>
+                <img src="/homepage_img.png" alt="student" style={{width: 304}}/>
+            </Flex>
         </Flex>
     );
 };

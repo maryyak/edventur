@@ -5,7 +5,7 @@ import {
     Input,
     Radio, Typography,
 } from 'antd';
-import Logo from "../../components/Logo";
+import Logo from "../components/Logo";
 
 const Registration = () => {
     const [form] = Form.useForm();
@@ -13,7 +13,7 @@ const Registration = () => {
     return (
         <Flex gap={106} style={{justifyContent: 'center'}}>
             <Flex vertical >
-                <Logo/>
+                <Logo color={'#08A652'}/>
                 <Typography.Title level={1}>Регистрация</Typography.Title>
                 <Typography.Text type="secondary">Откройте дверь новым возможностям</Typography.Text>
 
