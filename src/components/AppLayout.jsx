@@ -5,7 +5,7 @@ import ScrollToHash from "../utils/ScrollToHash";
 import AppRouter from "./AppRouter";
 import Footer from "./Footer";
 import {useLocation} from "react-router-dom";
-
+import Header from "./Header";
 const AppLayout = () => {
     const location = useLocation();
     const hideLayoutPaths = ["/login", "/registration"];
@@ -22,7 +22,7 @@ const AppLayout = () => {
             }
             <Layout style={{minHeight: "100vh"}}>
                 {showLayout &&
-                    <Layout.Header>Header</Layout.Header>
+                    <Header/>
                 }
                 <Layout.Content>
                     <ScrollToHash/>
