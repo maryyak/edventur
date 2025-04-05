@@ -1,25 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-    AutoComplete,
-    Button,
-    Cascader,
-    Checkbox,
-    Col, Flex,
+    Button, Flex,
     Form,
     Input,
-    Radio,
-    InputNumber,
-    Row,
-    Select, Typography,
+    Radio, Typography,
 } from 'antd';
 import Logo from "../../components/Logo";
-import styles from "../HomePage/HomePage.module.scss";
-const { Option } = Select;
 
 const Registration = () => {
     const [form] = Form.useForm();
-
-
 
     return (
         <Flex gap={106} style={{justifyContent: 'center'}}>
