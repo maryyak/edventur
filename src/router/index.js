@@ -5,7 +5,7 @@ import Login from "../pages/Login";
 import SingleProgram from "../pages/SingleProgram/SingleProgram";
 import Settings from "../pages/Settings";
 import Request from "../pages/Request";
-import Assessment from "../pages/Assessment";
+import Assessment from "../pages/Assesment/Assessment";
 
 export const routes = [
     {
