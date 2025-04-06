@@ -1,14 +1,8 @@
 import React from "react";
 import {Typography, Row, Col, Card, Avatar, Flex, Steps, Button, Collapse} from "antd";
 import {Link} from "react-router-dom";
+import useUniversities from "../hooks/api/universities/useUniversities";
 
-const universities = [
-    {id: 1, name: "РТУ МИРЭА", logo: "/MIREA_GERB.png"},
-    {id: 2, name: "РТУ МИРЭА", logo: "/MIREA_GERB.png"},
-    {id: 3, name: "РТУ МИРЭА", logo: "/MIREA_GERB.png"},
-    {id: 4, name: "РТУ МИРЭА", logo: "/MIREA_GERB.png"},
-    {id: 5, name: "РТУ МИРЭА", logo: "/MIREA_GERB.png"},
-];
 
 const steps = [
     {
@@ -65,7 +59,7 @@ const items = [
 
 
 const HomePage = () => {
-
+    const{ universities , loading, error} = useUniversities();
     return (
         <Flex vertical gap={100} style={{padding: 103}}>
             <Flex align="center" gap={41} justify="space-between">
@@ -88,10 +82,10 @@ const HomePage = () => {
                     </Typography.Title>
                     <Row justify="center" gutter={[16, 16]}>
                         {universities.map((uni) => (
-                            <Col key={uni.id} xs={12} sm={8} md={6} lg={4}>
+                            <Col key={uni?.id} xs={12} sm={8} md={6} lg={4}>
                                 <Flex vertical align="center">
-                                    <Avatar src={uni.logo} size={104}/>
-                                    <Typography.Text>{uni.name}</Typography.Text>
+                                    <Avatar src={uni?.logo} size={104}/>
+                                    <Typography.Text>{uni?.name}</Typography.Text>
                                 </Flex>
                             </Col>
                         ))}
