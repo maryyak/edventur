@@ -8,6 +8,16 @@ module.exports = (sequelize, DataTypes) => {
                 through: models.UserAssessment,
                 foreignKey: 'userId'
             });
+
+            User.belongsTo(models.University, {
+                foreignKey: 'universityId',
+            });
+
+            User.hasMany(models.Application, {
+                foreignKey: 'userId',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
+            });
         }
     }
 
@@ -20,7 +30,14 @@ module.exports = (sequelize, DataTypes) => {
         course: { type: DataTypes.STRING, allowNull: true },
         direction: { type: DataTypes.STRING, allowNull: true },
         score: { type: DataTypes.STRING, allowNull: true },
-        role: { type: DataTypes.ENUM('student', 'admin', 'representative'), allowNull: false}
+        role: { type: DataTypes.ENUM('student', 'admin', 'representative'), allowNull: false},
+        universityId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: { model: 'Universities', key: 'id' },
+            onUpdate: 'CASCADE',
+            onDelete: 'SET NULL'
+        }
     }, {
         sequelize,
         modelName: 'User',

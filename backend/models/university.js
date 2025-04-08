@@ -8,6 +8,17 @@ module.exports = (sequelize, DataTypes) => {
                 through: models.UniversityProgram,
                 foreignKey: 'universityId'
             });
+
+            University.hasMany(models.User, {
+                foreignKey: 'universityId'
+            });
+
+            University.hasMany(models.Application, {
+                foreignKey: 'universityId',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
+            });
+
         }
     }
 
