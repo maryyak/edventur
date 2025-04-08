@@ -7,7 +7,7 @@ import {Link, useParams} from "react-router-dom";
 import {programs} from "../../utils/mock";
 
 const SingleProgram = () => {
-    const { id } = useParams();
+    const {id} = useParams();
     const program = programs.find((p) => p.id === Number(id));
 
     return (
@@ -102,11 +102,14 @@ const SingleProgram = () => {
                             >
                                 <Flex vertical gap={16}>
                                     <Descriptions column={1}>
-                                        <Descriptions.Item label="Университет">{similarProgram.university}</Descriptions.Item>
+                                        <Descriptions.Item
+                                            label="Университет">{similarProgram.university}</Descriptions.Item>
                                         <Descriptions.Item
                                             label="Описание">{similarProgram.description.slice(0, 100)}...</Descriptions.Item>
-                                        <Descriptions.Item label="Уровень обучения">{similarProgram.level}</Descriptions.Item>
-                                        <Descriptions.Item label="Форма обучения">{similarProgram.form}</Descriptions.Item>
+                                        <Descriptions.Item
+                                            label="Уровень обучения">{similarProgram.level}</Descriptions.Item>
+                                        <Descriptions.Item
+                                            label="Форма обучения">{similarProgram.form}</Descriptions.Item>
                                     </Descriptions>
                                     <Flex gap={16}>
                                         <Button type="primary">
@@ -125,7 +128,11 @@ const SingleProgram = () => {
             <Flex className={styles.banner} justify="center" align="center" gap={100}>
                 <Flex vertical gap={30}>
                     <Typography.Title level={2}>Хочешь подать заявку на обучение?</Typography.Title>
-                    <Button type="primary">Подать заявку</Button>
+                    <Link to={`/request/${program.id}`}>
+                        <Button type="primary" style={{width:'100%'}}>
+                            Подать заявку
+                        </Button>
+                    </Link>
                 </Flex>
                 <img src="/homepage_img.png" alt="student" style={{width: 304}}/>
             </Flex>

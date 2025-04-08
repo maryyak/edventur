@@ -6,6 +6,7 @@ import SingleProgram from "../pages/SingleProgram/SingleProgram";
 import Settings from "../pages/Settings";
 import Request from "../pages/Request";
 import Assessment from "../pages/Assesment/Assessment";
+import Applications from "../pages/Applications";
 
 export const routes = [
     {
@@ -39,5 +40,9 @@ export const routes = [
     {
         path: '/assessment/:id',
         element: <Assessment/>
+    },
+    {
+        path: '/applications',
+        element: <Applications/>
     }
 ]

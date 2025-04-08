@@ -1,13 +1,13 @@
 import React from "react";
-import {Typography, Row, Col, Card, Avatar, Flex, Steps, Button, Collapse} from "antd";
+import {Typography, Row, Col, Card, Avatar, Flex, Steps, Button, Collapse, Spin, Alert} from "antd";
 import {Link} from "react-router-dom";
 import useUniversities from "../hooks/api/universities/useUniversities";
 
 
 const steps = [
     {
-        title: "Заявка",
-        description: "Пройдите регистрацию на нашем портале и подайте заявку",
+        title: "Программа",
+        description: "Пройдите регистрацию на нашем портале и выберите понравившуюся программу",
         image: "/step1.png",
     },
     {
@@ -16,8 +16,8 @@ const steps = [
         image: "/step2.png",
     },
     {
-        title: "Ответ",
-        description: "Ожидайте ответ по вашей заявке. Успехов!",
+        title: "Заявка",
+        description: "Подайте заявление на программу. Успехов!",
         image: "/step3.png",
     },
 ];
@@ -59,7 +59,8 @@ const items = [
 
 
 const HomePage = () => {
-    const{ universities , loading, error} = useUniversities();
+    const {universities, loading: universityLoading, error: universityError} = useUniversities();
+
     return (
         <Flex vertical gap={100} style={{padding: 103}}>
             <Flex align="center" gap={41} justify="space-between">
@@ -80,16 +81,21 @@ const HomePage = () => {
                     <Typography.Title level={3} style={{textAlign: "center", margin: 0}}>
                         Наши ВУЗы-партнеры
                     </Typography.Title>
-                    <Row justify="center" gutter={[16, 16]}>
-                        {universities.map((uni) => (
-                            <Col key={uni?.id} xs={12} sm={8} md={6} lg={4}>
-                                <Flex vertical align="center">
-                                    <Avatar src={uni?.logo} size={104}/>
-                                    <Typography.Text>{uni?.name}</Typography.Text>
-                                </Flex>
-                            </Col>
-                        ))}
-                    </Row>
+                    {
+                        universityError && <Alert message="Ошибка при загрузке вузов-партнеров" type="error"/>
+                    }
+                    <Spin spinning={universityLoading}>
+                        <Row justify="center" gutter={[16, 16]}>
+                            {universities.map((uni) => (
+                                <Col key={uni?.id} xs={12} sm={8} md={6} lg={4}>
+                                    <Flex vertical align="center">
+                                        <Avatar src={uni?.logo} size={104}/>
+                                        <Typography.Text>{uni?.name}</Typography.Text>
+                                    </Flex>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Spin>
                 </Flex>
             </Card>
 
@@ -125,12 +131,16 @@ const HomePage = () => {
                 <Flex vertical style={{padding: 100}}>
                     <Typography.Title level={2}>Начните с бесплатной регистрации!</Typography.Title>
                     <Flex gap={20}>
-                        <Button style={{backgroundColor: " #318d25", color: "#fff"}}>
-                            <Link to="/registration">Регистрация</Link>
-                        </Button>
-                        <Button style={{backgroundColor: " #318d25", color: "#fff"}}>
-                            <Link to="/login">Вход</Link>
-                        </Button>
+                        <Link to="/registration">
+                            <Button style={{backgroundColor: " #318d25", color: "#fff"}}>
+                                Регистрация
+                            </Button>
+                        </Link>
+                        <Link to="/login">
+                            <Button style={{backgroundColor: " #318d25", color: "#fff"}}>
+                                Вход
+                            </Button>
+                        </Link>
                     </Flex>
                 </Flex>
                 <img
