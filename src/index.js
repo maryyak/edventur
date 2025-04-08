@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigProvider } from "antd";
+import {ConfigProvider} from "antd";
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -11,9 +11,10 @@ import "@fontsource/montserrat/900.css";
 const theme = {
     token: {
         fontFamily: "Montserrat, sans-serif",
-        colorPrimary: "#08a652", // Основной цвет
+        colorPrimary: "#08a652",
         colorPrimaryBg: "#f1f5f2",
         colorBgLayout: "none",
+        colorLink: "#08a652",
     },
     components: {
         Layout: {
@@ -22,7 +23,7 @@ const theme = {
         Button: {
             fontWeight: 500,
             controlHeight: 43,
-        },
+        }
     },
 };
 

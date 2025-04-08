@@ -134,14 +134,16 @@ const EducationPrograms = () => {
                                             <Descriptions.Item label="Форма обучения">{program.form}</Descriptions.Item>
                                         </Descriptions>
                                         <Flex gap={16}>
-                                            <Button type="primary">
-                                                <Link to={`/request/${program.id}`}>
+                                            <Link to={`/request/${program.id}`}>
+                                                <Button type="primary">
                                                     Подать заявку
-                                                </Link>
-                                            </Button>
-                                            <Button>
-                                                <Link to={`/programs/${program.id}`}>Узнать подробнее</Link>
-                                            </Button>
+                                                </Button>
+                                            </Link>
+                                            <Link to={`/programs/${program.id}`}>
+                                                <Button>
+                                                    Узнать подробнее
+                                                </Button>
+                                            </Link>
                                         </Flex>
                                     </Flex>
                                 </Card>

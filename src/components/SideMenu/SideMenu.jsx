@@ -22,7 +22,7 @@ const menuItems = [
         label: 'Образовательные программы',
     },
     {
-        key: '/3',
+        key: '/applications',
         icon: <SolutionOutlined/>,
         label: 'Мои заявки',
     },

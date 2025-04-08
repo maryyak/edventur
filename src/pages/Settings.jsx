@@ -82,6 +82,15 @@ const Settings = () => {
                         </Flex>
                     </Form.Item>
 
+                    <Form.Item
+                        name="studyplan"
+                        label="Учебный план"
+                    >
+                        <Upload {...props}>
+                            <Button icon={<UploadOutlined/>}>Загрузите ваш учебный план</Button>
+                        </Upload>
+                    </Form.Item>
+
                     <Form.Item label={null}>
                         <Button type="primary" htmlType="submit">
                             Сохранить
