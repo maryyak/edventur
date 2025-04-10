@@ -7,6 +7,7 @@ import Settings from "../pages/Settings";
 import Request from "../pages/Request";
 import Assessment from "../pages/Assesment/Assessment";
 import Applications from "../pages/Applications";
+import UniversityApplications from "../pages/UniversityApplications";
 
 export const routes = [
     {
@@ -44,5 +45,9 @@ export const routes = [
     {
         path: '/applications',
         element: <Applications/>
+    },
+    {
+        path: '/universityApplications',
+        element: <UniversityApplications/>
     }
 ]
