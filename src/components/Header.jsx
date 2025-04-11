@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons";
 import {Link} from "react-router-dom";
 import {notifications, userInfo} from "../utils/mock";
-
+const user = userInfo.find((u) => u.id === 2);
 //тут надо еще добавить механизм выхода из аккаунта
 const Header = () => {
     const menu = (
@@ -14,7 +14,7 @@ const Header = () => {
             <Menu.Item key="account">
                 <Link to="/settings">
                     <Flex gap={16}>
-                        {userInfo.fio}
+                        {user.fio}
                         <ArrowRightOutlined/>
                     </Flex>
                 </Link>
