@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-    Card, Typography, Tag, Space, Button, Modal, Input, Collapse, Select, Flex
+    Card, Typography, Tag, Space, Button, Modal, Input, Collapse, Select, Flex, Divider
 } from 'antd';
 import {
     ClockCircleOutlined,
     CheckCircleOutlined,
     CloseCircleOutlined
 } from '@ant-design/icons';
-import { universityApplications, userInfo, programs } from "../utils/mock";
+import { universityApplications, userInfo } from "../utils/mock";
 
 const { Panel } = Collapse;
 
@@ -112,9 +112,6 @@ const UniversityApplications = () => {
                         <Typography.Text type="secondary">Дата подачи:</Typography.Text>
                         <Typography.Text>{new Date(app.date).toLocaleString("ru-RU")}</Typography.Text>
 
-                        <Typography.Text type="secondary">Статус:</Typography.Text>
-                        {statusTag(app.status)}
-
                         <Typography.Text type="secondary">ФИО студента:</Typography.Text>
                         <Typography.Text>{userInfo.fio}</Typography.Text>
 
@@ -165,7 +162,8 @@ const UniversityApplications = () => {
     return (
         <>
             <Typography.Title>Заявки студентов</Typography.Title>
-            <Typography.Title level={3}>На рассмотрении</Typography.Title>
+            <Divider orientation="left"  style={{ borderColor: 'black' }}><Typography.Title level={3}>На рассмотрении</Typography.Title></Divider>
+
             <Select
                 placeholder="Фильтр по программе"
                 style={{ width: 200, marginBottom: 20 }}
@@ -190,8 +188,9 @@ const UniversityApplications = () => {
             ))}
 
             <Flex vertical style={{opacity:0.8}}>
-            <Typography.Title level={4}>Архив заявок</Typography.Title>
-            <Select
+                <Divider orientation="left"  style={{ borderColor: 'black' }}><Typography.Title level={3}>Архив заявок</Typography.Title></Divider>
+
+                <Select
                 placeholder="Фильтр по программе"
                 style={{ width: 200, marginBottom: 20}}
                 allowClear
