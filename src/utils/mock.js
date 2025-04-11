@@ -697,3 +697,37 @@ export const applications = [
         comment: "Вы успешно прошли отбор"
     }
 ]
+
+export const universityApplications = [
+    {
+        id: 1,
+        user: { fio: "Имя Фамилия" },
+        program: programs[0],
+        date: "2025-03-01 09:20:15.123+03",
+        status: "На рассмотрении",
+        file: "...",
+        assesment: 5,
+        comment: ""
+    },
+    {
+        id: 2,
+        user: { fio: "Имя Фамилия" },
+        program: programs[0],
+        date: "2025-03-01 09:20:15.123+03",
+        status: "На рассмотрении",
+        file: "...",
+        assesment: 4.6,
+        comment: ""
+    },
+    {
+        id: 3,
+        user: { fio: "Имя Фамилия" },
+        program: programs[2],
+        date: "2025-03-01 09:20:15.123+03",
+        status: "На рассмотрении",
+        file: "...",
+        comment: ""
+    },
+
+
+]
