@@ -28,6 +28,10 @@ module.exports = (sequelize, DataTypes) => {
                 through: models.UniversityProgram,
                 foreignKey: 'programId'
             });
+
+            Program.hasMany(models.Application, {
+                foreignKey: 'programId',
+            });
         }
     }
 

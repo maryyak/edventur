@@ -9,5 +9,6 @@ router.use("/programs", require("./programs"))
 router.use("/assessments", require("./assessments"))
 router.use("/user-assessments", require("./userAssessments"))
 router.use("/university-programs", require("./universityPrograms"))
+router.use("/applications", require("./applications"))
 
 module.exports = router;

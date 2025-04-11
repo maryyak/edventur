@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require('../models');
+const  { University } = require('../models')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -105,6 +106,34 @@ router.get('/:id', authenticateJWT, async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+
+// Получение информации об университете, к которому привязан пользователь
+router.get('/:id/university', authenticateJWT, async (req, res) => {
+    try {
+        const user = await User.findByPk(req.params.id, {
+            include: {
+                model: University,
+                attributes: 'id'
+            }
+        });
+
+        if (user) {
+            res.status(200).json({
+                user: {
+                    id: user.id,
+                    username: user.fio,
+                    email: user.email
+                },
+                university: user.University // Привязанный университет
+            });
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
 
 // обновление информации о пользователе
 router.put('/:id', authenticateJWT, async (req, res) => {
