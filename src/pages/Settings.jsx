@@ -1,14 +1,38 @@
-import React from 'react';
-import {Alert, Button, Card, Flex, Form, Input, message, Typography, Upload} from "antd";
-import {UploadOutlined} from "@ant-design/icons";
-import {Link} from "react-router-dom";
-
+import React,{ useState }  from 'react';
+import {Alert, Button, Card, Flex, Form, Input, message, Typography, Upload, Collapse, Select,} from "antd";
+import {UploadOutlined, PlusOutlined} from "@ant-design/icons";
+import {Link, useNavigate,} from "react-router-dom";
 //тоже мок для подтягивания из бд, надо еще реализовать механизм для сохранения новых данных
-import {userInfo} from "../utils/mock";
+import {userInfo, programs,assessments} from "../utils/mock";
 
+const { Panel } = Collapse;
 //зачетку еще надо с бэка подтягивать и рисовать, если есть
 const Settings = () => {
     const [form] = Form.useForm();
+    const user = userInfo.find((u) => u.id === 2);
+    const navigate = useNavigate();
+    const [selectedAssessment, setSelectedAssessment] = useState(null);
+    const [programList, setProgramList] = useState(
+        programs.filter((p) => p.university === user.uni)
+    );
+
+    const handleAddProgram = () => {
+        setProgramList((prev) => [
+            ...prev,
+            {
+                title: '',
+                description: '',
+                university: userInfo.uni,
+                level: '',
+                form: '',
+                seats: '',
+                duration: '',
+                additionally: '',
+                min_similarity:'',
+                assessment:'',
+            },
+        ]);
+    };
 
     const props = {
         name: 'file',
@@ -28,7 +52,7 @@ const Settings = () => {
         },
     };
 
-    const settings = userInfo.role === 'student' ?
+    const settings = user.role === 'student' ?
         <Flex gap={20} vertical style={{width:'100%'}}>
             <Typography.Title level={1}>Личный кабинет</Typography.Title>
             <Alert message="Информация"
@@ -39,7 +63,7 @@ const Settings = () => {
                     layout="vertical"
                     form={form}
                     name="info"
-                    initialValues={userInfo}
+                    initialValues={user}
                 >
                     <Form.Item
                         name="fio"
@@ -99,7 +123,131 @@ const Settings = () => {
                 </Form>
             </Card>
         </Flex>
-        : userInfo.role === '' ?
+        :user.role === 'agent'?
+            <Flex gap={20} vertical style={{width:'100%'}}>
+                <Typography.Title level={2}>Личный кабинет представителя ВУЗа</Typography.Title>
+                <Card>
+                    <Form
+                        layout="vertical"
+                        form={form}
+                        name="info"
+                        initialValues={user}
+                    >
+                        <Form.Item
+                            name="fio"
+                            label="ФИО"
+                        >
+                            <Input/>
+                        </Form.Item>
+
+                        <Form.Item
+                            name="uni"
+                            label="ВУЗ"
+                        >
+                            <Input/>
+                        </Form.Item>
+
+                        <Form.Item
+                            name="email"
+                            label="Адрес электронной почты"
+                        >
+                            <Input/>
+                        </Form.Item>
+                        <Form.Item label={null}>
+                            <Button type="primary" htmlType="submit">
+                                Сохранить
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Card>
+                <Card>
+                    <Flex style={{  justifyContent: 'space-between', alignItems: 'center', marginBottom: 20}}>
+                        <Typography.Title level={3} style={{ margin: 0 }}>
+                            Образовательные программы
+                        </Typography.Title>
+                        <Button
+                            icon={<PlusOutlined />}
+                            onClick={handleAddProgram}
+                            type="dashed"
+                        >
+                            Добавить
+                        </Button>
+                    </Flex>
+
+                    <Collapse accordion>
+                        {programList.map((program, index) => (
+                            <Panel header={program.title || `Новая программа ${index + 1}`} key={index}>
+                                <Form
+                                    layout="vertical"
+                                    initialValues={program}
+                                >
+                                    <Form.Item name="title" label="Название">
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item name="description" label="Описание">
+                                        <Input.TextArea rows={4} />
+                                    </Form.Item>
+                                    <Form.Item name="level" label="Уровень">
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item name="form" label="Форма обучения">
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item name="duration" label="Срок обучения">
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item name="additionally" label="Дополнительно">
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item name="seats" label="Количество мест">
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Учебный план"
+                                    >
+                                            <Upload {...props}>
+                                                <Button icon={<UploadOutlined/>}>Загрузите учебный план программы</Button>
+                                            </Upload>
+                                    </Form.Item>
+                                    <Flex gap={20} align="center">
+                                        <Form.Item name="assessment" label="Ассесмент">
+                                            <Select
+                                                placeholder="Выберите ассесмент"
+                                                style={{ width: 250 }}
+                                                allowClear
+                                                options={assessments.map((item) => ({
+                                                    label: item.title,
+                                                    value: item.id,
+                                                }))}
+                                            />
+                                        </Form.Item>
+
+                                        <Form.Item style={{ margin: 0 }}>
+                                            <Button type="dashed" htmlType="submit" onClick={() => navigate("/createAssesment")}>
+                                                Создать
+                                            </Button>
+                                        </Form.Item>
+                                    </Flex>
+
+
+                                    <Form.Item>
+                                        <Flex style={{justifyContent:'space-between'}}>
+                                        <Button type="primary" htmlType="submit">
+                                            Сохранить
+                                        </Button>
+                                            <Button danger htmlType="submit">
+                                                Удалить
+                                            </Button>
+                                        </Flex>
+                                    </Form.Item>
+                                </Form>
+                            </Panel>
+                        ))}
+                    </Collapse>
+                </Card>
+
+            </Flex>
+        : user.role === '' ?
             <></>
             : <Flex vertical align="center" justify="center" style={{width:'100%'}}>
                 <Typography.Title level={2}>Для просмотра личного кабинета необходимо авторизоваться</Typography.Title>
