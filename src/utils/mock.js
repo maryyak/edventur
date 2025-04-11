@@ -16,6 +16,10 @@ export const userInfo = [
         uni: 'РТУ МИРЭА',
         email: 'petrov@mail.ru',
         role: 'agent'
+    },
+    {
+        id:3,
+        role: 'admin'
     }
 ];
 
