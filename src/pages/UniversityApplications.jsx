@@ -25,6 +25,7 @@ const statusTag = (status) => {
 };
 
 const UniversityApplications = () => {
+    const user = userInfo.find((u) => u.id === 1);
     const [applications, setApplications] = useState(universityApplications);
     const [modalVisible, setModalVisible] = useState(false);
     const [currentAppId, setCurrentAppId] = useState(null);
@@ -98,7 +99,7 @@ const UniversityApplications = () => {
                 style={{ borderRadius: 16 }}
                 header={
                     <Flex justify="space-between" align="center" style={{ width: '100%' }}>
-                        <Typography.Text>Заявка от {userInfo.fio}</Typography.Text>
+                        <Typography.Text>Заявка от {user.fio}</Typography.Text>
                         {statusTag(app.status)}
                     </Flex>
                 }
@@ -113,19 +114,19 @@ const UniversityApplications = () => {
                         <Typography.Text>{new Date(app.date).toLocaleString("ru-RU")}</Typography.Text>
 
                         <Typography.Text type="secondary">ФИО студента:</Typography.Text>
-                        <Typography.Text>{userInfo.fio}</Typography.Text>
+                        <Typography.Text>{user.fio}</Typography.Text>
 
                         <Typography.Text type="secondary">Университет:</Typography.Text>
-                        <Typography.Text>{userInfo.uni}</Typography.Text>
+                        <Typography.Text>{user.uni}</Typography.Text>
 
                         <Typography.Text type="secondary">Курс:</Typography.Text>
-                        <Typography.Text>{userInfo.course}</Typography.Text>
+                        <Typography.Text>{user.course}</Typography.Text>
 
                         <Typography.Text type="secondary">Направление:</Typography.Text>
-                        <Typography.Text>{userInfo.direction}</Typography.Text>
+                        <Typography.Text>{user.direction}</Typography.Text>
 
                         <Typography.Text type="secondary">Средний балл:</Typography.Text>
-                        <Typography.Text>{userInfo.score}</Typography.Text>
+                        <Typography.Text>{user.score}</Typography.Text>
 
                         {app.program.assessment && (
                             <>
@@ -137,7 +138,7 @@ const UniversityApplications = () => {
 
                             <>
                                 <Typography.Text type="secondary">Выписка из зачетки:</Typography.Text>
-                                <a href={userInfo.file} target="_blank" rel="noopener noreferrer">Открыть</a>
+                                <a href={user.file} target="_blank" rel="noopener noreferrer">Открыть</a>
                             </>
 
                         {app.file && (
