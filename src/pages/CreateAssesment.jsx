@@ -60,8 +60,10 @@ const CreateAssessment = () => {
                                     onChange={(e) => updateQuestionText(qIndex, e.target.value)}
                                 />
                             </Form.Item>
-
-                            <Typography.Text strong>Варианты ответа:</Typography.Text>
+                            <Flex vertical>
+                                <Typography.Text strong>Варианты ответа:</Typography.Text>
+                                <Typography.Text>(Отметьте верный вариант галочкой)</Typography.Text>
+                            </Flex>
                             <Space direction="vertical" style={{ display: 'flex', marginTop: 8 }}>
                                 {q.options.map((opt, oIndex) => (
                                     <Flex key={oIndex} align="center" gap={10}>
