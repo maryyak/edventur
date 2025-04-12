@@ -4,7 +4,7 @@ import styles from "./SideMenu.module.scss";
 import {
     HomeOutlined, PhoneOutlined,
     ReadOutlined, SettingOutlined,
-    SolutionOutlined,BookOutlined
+    SolutionOutlined, BookOutlined, SnippetsOutlined
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Logo";
@@ -26,6 +26,7 @@ const SideMenu = () => {
             icon: <ReadOutlined />,
             label: 'Образовательные программы',
         },
+
     ];
 
     const studentItems = [
@@ -48,6 +49,11 @@ const SideMenu = () => {
             label: 'Заявки от студентов',
         },
         {
+            key: '/allAssesments',
+            icon: <SnippetsOutlined />,
+            label: 'Ассесменты',
+        },
+        {
             key: '/settings',
             icon: <SettingOutlined />,
             label: 'Настройки профиля',
@@ -56,6 +62,11 @@ const SideMenu = () => {
     ];
 
     const adminItems = [
+        {
+            key: '/allAssesments',
+            icon: <SnippetsOutlined />,
+            label: 'Ассесменты',
+        },
         {
             key: '/partnerUniversities',
             icon: <BookOutlined />,
