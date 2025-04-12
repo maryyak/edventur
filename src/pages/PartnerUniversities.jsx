@@ -1,17 +1,18 @@
 import {
-    Button, Card, Col, Collapse, Flex, Form, Input, message, Row,
+    Button, Card, Col, Collapse, Flex, Form, Input, message, Row, Select,
     Table, Typography, Upload
 } from "antd";
 import React, { useState } from "react";
-import { programs, universities, userInfo } from "../utils/mock";
+import {assessments, programs, universities, userInfo} from "../utils/mock";
 import {UploadOutlined} from "@ant-design/icons";
+import {useNavigate} from "react-router-dom";
 
 const { Panel } = Collapse;
 
 const PartnerUniversities = () => {
     const [universitiesList, setUniversitiesList] = useState(universities);
     const [usersList, setUsersList] = useState(userInfo);
-
+    const navigate = useNavigate();
     const [newUniversityName, setNewUniversityName] = useState("");
     const [openRepForms, setOpenRepForms] = useState({});
     const [openProgForms, setOpenProgForms] = useState({});
@@ -208,6 +209,20 @@ const PartnerUniversities = () => {
                                                             <Button icon={<UploadOutlined />}>Загрузите новый учебный план программы</Button>
                                                         </Upload>
                                                     </Form.Item>
+                                                    <Flex gap={20} align="center">
+                                                        <Form.Item name="assessment" label="Ассесмент">
+                                                            <Select
+                                                                placeholder="Выберите ассесмент"
+                                                                style={{ width: 250 }}
+                                                                allowClear
+                                                                options={assessments.map((item) => ({
+                                                                    label: item.title,
+                                                                    value: item.id,
+                                                                }))}
+                                                            />
+                                                        </Form.Item>
+
+                                                    </Flex>
                                                     <Flex style={{ marginTop: 20,justifyContent:'space-between' }}>
                                                         <Button type="primary" htmlType="submit">Сохранить</Button>
                                                         <Button
