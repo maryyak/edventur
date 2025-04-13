@@ -8,12 +8,12 @@ import {
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Logo";
-import { userInfo } from "../../utils/mock";
+import {useUserInfo} from "../../context/UserInfoContext";
 
 const SideMenu = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const user = userInfo.find((u) => u.id === 3);
+    const { userInfo } = useUserInfo();
 
     const commonItems = [
         {
@@ -75,11 +75,11 @@ const SideMenu = () => {
 
     ];
 
-    const menuItems = user?.role === 'student'
+    const menuItems = userInfo?.role === 'student'
         ? [...commonItems, ...studentItems]
-        : user?.role === 'agent'
+        : userInfo?.role === 'representative'
             ? [...commonItems, ...agentItems]
-            :user?.role === 'admin'
+            :userInfo?.role === 'admin'
                 ? [...commonItems, ...adminItems]
             : [...commonItems];
 

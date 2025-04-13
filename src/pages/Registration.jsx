@@ -9,24 +9,39 @@ import {
 import Logo from "../components/Logo";
 import useAuth from "../hooks/api/users/authUser";
 import {useNavigate} from "react-router-dom";
+import {useUserInfo} from "../context/UserInfoContext";
 
 const Registration = () => {
     const [form] = Form.useForm();
     const {register, loading, error} = useAuth();
     const navigate = useNavigate();
-    const [user, setUser] = useState()
+    const [user, setUser] = useState();
+    const { setUserInfo } = useUserInfo();
 
     useEffect(() => {
         if (user) {
+            const userData = {
+                id: user?.id,
+                username: user?.username,
+                role: user?.role,
+                email: user?.email,
+                uni: user?.uni,
+
+            };
+            // Сохраняем в контексте
+            setUserInfo(userData);
+
             navigate("/");
+
         }
-    }, [user, navigate]);
+    }, [user, navigate, setUserInfo]);
 
     const onFinish = async (values) => {
         try {
             console.log(values)
             setUser(await register(values))
         } catch (err) {
+            console.log(values)
             console.error("Ошибка при регистрации:", err);
         }
     };

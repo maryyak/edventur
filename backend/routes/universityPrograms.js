@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { UniversityProgram } = require('../models');
+const { UniversityProgram, University } = require('../models');
 
 // Получить все связи между университетами и программами
 router.get('/', async (req, res) => {
@@ -12,19 +12,31 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Получить все программы для конкретного университета
+// Получить все программы для конкретного университета по id
 router.get('/university/:universityId/programs', async (req, res) => {
     const { universityId } = req.params;
     try {
-        const programs = await UniversityProgram.findAll({
-            where: { universityId },
-            include: ['Program'],  // Включаем связанную модель Program
+        const university = await University.findOne({
+            where: { id: universityId },
         });
+
+        if (!university) {
+            return res.status(404).json({ error: 'University not found' });
+        }
+
+        const programs = await university.getPrograms();
+
+        if (programs.length === 0) {
+            return res.status(404).json({ error: 'No programs found for this university' });
+        }
+
         res.status(200).json(programs);
     } catch (error) {
+        console.log(error.message)
         res.status(500).json({ error: error.message });
     }
 });
+
 
 // Получить все университеты для конкретной программы
 router.get('/program/:programId/universities', async (req, res) => {

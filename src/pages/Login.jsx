@@ -8,18 +8,31 @@ import {
 } from 'antd';
 import Logo from "../components/Logo";
 import useAuth from "../hooks/api/users/authUser";
+import {useUserInfo} from "../context/UserInfoContext";
 
 const Login = () => {
     const [form] = Form.useForm();
     const {login, loading, error} = useAuth();
     const navigate = useNavigate();
-    const [user, setUser] = useState()
+    const [user, setUser] = useState();
+    const { setUserInfo } = useUserInfo();
 
     useEffect(() => {
         if (user) {
+            const userData = {
+                id: user?.id,
+                username: user?.username,
+                role: user?.role,
+                email: user?.email,
+                uni: user?.uni,
+                universityId: user?.universityId
+            };
+            console.log(userData);
+            // Сохраняем в контексте
+            setUserInfo(userData);
             navigate("/");
         }
-    }, [user, navigate]);
+    }, [user, navigate, setUserInfo]);
 
     const onFinish = async (values) => {
         try {

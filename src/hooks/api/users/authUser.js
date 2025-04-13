@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from "react-router-dom";
 import {setToken} from "../../../utils/token";
+import {useUserInfo} from "../../../context/UserInfoContext";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const useAuth = () => {
@@ -9,6 +10,7 @@ const useAuth = () => {
     const navigate = useNavigate();
     const [users, setUsers] = useState(null);
     const location = useLocation();
+    const {setUserInfo} = useUserInfo();
 
     const checkAuth = async () => {
         try {
@@ -36,14 +38,15 @@ const useAuth = () => {
                     password: values.password,
                     role: values['radio-button'],
                     university: values.uni
+
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                console.error("Ошибка регистрации:", data.message || 'Ошибка регистрации');
-                throw new Error(data.message || 'Ошибка регистрации');
+                console.error("Ошибка регистрации:", data.error || data.message || 'Ошибка регистрации');
+                throw new Error(data.error || data.message || 'Ошибка регистрации');
             }
 
             console.log("Пользователь зарегистрирован:", data);
@@ -89,6 +92,7 @@ const useAuth = () => {
         } catch (err) {
             console.error("Ошибка при выходе:", err);
         } finally {
+            setUserInfo(null);
             navigate("/login");
         }
     };

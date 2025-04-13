@@ -3,32 +3,41 @@ import {Alert, Button, Card, Flex, Form, Input, message, Typography, Upload, Col
 import {UploadOutlined, PlusOutlined} from "@ant-design/icons";
 import {Link, useNavigate,} from "react-router-dom";
 //тоже мок для подтягивания из бд, надо еще реализовать механизм для сохранения новых данных
-import {userInfo, programs,assessments} from "../utils/mock";
+import {assessments} from "../utils/mock";
+import universityPrograms from "../hooks/api/universityPrograms/useUniversityPrograms";
+import {getToken} from "../utils/token";
+import useUser from "../hooks/api/users/useUser";
+import {useUserInfo} from "../context/UserInfoContext";
 
 const { Panel } = Collapse;
-//зачетку еще надо с бэка подтягивать и рисовать, если есть
 const Settings = () => {
     const [form] = Form.useForm();
-    const user = userInfo.find((u) => u.id === 2);
+    const { userInfo } = useUserInfo();
+    const { user } = useUser(userInfo?.id, getToken());
     const navigate = useNavigate();
-    const [programList, setProgramList] = useState(
-        programs.filter((p) => p.university === user.uni)
-    );
+    const { programs: fetchedPrograms, loading, error } = universityPrograms(user?.universityId);
+
+    const [localPrograms, setLocalPrograms] = useState([]);
+
+    const allPrograms = [
+        ...(Array.isArray(fetchedPrograms) ? fetchedPrograms : []),
+        ...localPrograms
+    ];
 
     const handleAddProgram = () => {
-        setProgramList((prev) => [
+        setLocalPrograms((prev) => [
             ...prev,
             {
                 title: '',
                 description: '',
-                university: userInfo.uni,
+                university: user?.uni,
                 level: '',
                 form: '',
                 seats: '',
                 duration: '',
                 additionally: '',
-                min_similarity:'',
-                assessment:'',
+                min_similarity: '',
+                assessment: '',
             },
         ]);
     };
@@ -51,7 +60,7 @@ const Settings = () => {
         },
     };
 
-    const settings = user.role === 'student' ?
+    const settings = user?.role === 'student' ?
         <Flex gap={20} vertical style={{width:'100%'}}>
             <Typography.Title level={1}>Личный кабинет</Typography.Title>
             <Alert message="Информация"
@@ -72,7 +81,7 @@ const Settings = () => {
                     </Form.Item>
 
                     <Form.Item
-                        name="uni"
+                        name="university"
                         label="ВУЗ"
                     >
                         <Input/>
@@ -122,7 +131,7 @@ const Settings = () => {
                 </Form>
             </Card>
         </Flex>
-        :user.role === 'agent'?
+        :user?.role === 'representative'?
             <Flex gap={20} vertical style={{width:'100%'}}>
                 <Typography.Title level={2}>Личный кабинет представителя ВУЗа</Typography.Title>
                 <Card>
@@ -140,7 +149,7 @@ const Settings = () => {
                         </Form.Item>
 
                         <Form.Item
-                            name="uni"
+                            name="university"
                             label="ВУЗ"
                         >
                             <Input/>
@@ -174,7 +183,7 @@ const Settings = () => {
                     </Flex>
 
                     <Collapse accordion>
-                        {programList.map((program, index) => (
+                        {allPrograms.map((program, index) => (
                             <Panel header={program.title || `Новая программа ${index + 1}`} key={index}>
                                 <Form
                                     layout="vertical"
@@ -246,14 +255,14 @@ const Settings = () => {
                 </Card>
 
             </Flex>
-        : user.role === '' ?
-            <></>
-            : <Flex vertical align="center" justify="center" style={{width:'100%'}}>
+        : (!user || !user.role) ?
+            <Flex vertical align="center" justify="center" style={{width:'100%'}}>
                 <Typography.Title level={2}>Для просмотра личного кабинета необходимо авторизоваться</Typography.Title>
                 <Button style={{backgroundColor: " #318d25", color: "#fff"}}>
                     <Link to="/login">Вход</Link>
                 </Button>
             </Flex>
+            : <></>
 
     return (
         <Flex gap={50}>

@@ -36,6 +36,8 @@ router.post('/register', async (req, res) => {
                 id: newUser.id,
                 username: newUser.fio,
                 email: newUser.email,
+                uni: newUser.university,
+                role: newUser.role
             }
         });
     } catch (error) {
@@ -69,7 +71,10 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user.id,
                 username: user.fio,
-                email: user.email
+                email: user.email,
+                uni: user.university,
+                role: user.role,
+                universityId: user.universityId
             }
         });
     } catch (error) {
@@ -93,11 +98,17 @@ const authenticateJWT = (req, res, next) => {
 };
 
 //получение информации о пользователе по ID
-router.get('/:id', authenticateJWT, async (req, res) => {
+router.get('/:userId', authenticateJWT, async (req, res) => {
+    const { userId } = req.params;
     try {
-        const user = await User.findByPk(req.params.id);
+        const user = await User.findByPk(userId);
+
         if (user) {
-            res.status(200).json(user);
+            // Удаляем пароль из объекта перед отправкой
+            const userData = user.get();
+            delete userData.password;  // Убираем пароль из данных
+
+            res.status(200).json(userData);  // Отправляем данные без пароля
         } else {
             res.status(404).json({ error: 'User not found' });
         }
@@ -105,6 +116,7 @@ router.get('/:id', authenticateJWT, async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+
 
 // Получение информации об университете, к которому привязан пользователь
 router.get('/:id/university', authenticateJWT, async (req, res) => {

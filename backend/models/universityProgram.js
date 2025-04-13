@@ -2,7 +2,14 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-    class UniversityProgram extends Model {}
+    class UniversityProgram extends Model {
+        static associate(models) {
+            UniversityProgram.belongsTo(models.Program, {
+                foreignKey: 'programId', // связываем по programId
+                as: 'Program',  // Уникальный alias для ассоциации
+            });
+        }
+    }
 
     UniversityProgram.init({
         universityId: {
@@ -15,6 +22,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             references: { model: 'Program', key: 'id' }
         }
+
+
     }, {
         sequelize,
         modelName: 'UniversityProgram',

@@ -27,7 +27,7 @@ const EducationPrograms = () => {
     const [selectedForm, setSelectedForm] = useState(null);
 
     const {data: programs, loading, error} = usePrograms();
-    const {universities} = useUniversities()
+    const {universities} = useUniversities();
 
     const sortedPrograms = [...programs].sort((a, b) => {
         const aBelowThreshold = a.similarity < a.min_similarity;
@@ -48,10 +48,17 @@ const EducationPrograms = () => {
 
     // Группировка отфильтрованных программ по университетам
     const groupedByUniversity = filteredPrograms.reduce((acc, program) => {
-        if (!acc[program.Universities[0].name]) acc[program.Universities[0].name] = [];
-        acc[program.Universities[0].name].push(program);
+        const uni = program?.Universities?.[0];
+        const uniName = uni?.name;
+
+        if (!uniName) return acc;
+
+        if (!acc[uniName]) acc[uniName] = [];
+        acc[uniName].push(program);
+
         return acc;
     }, {});
+
 
     const universityOptions = universities.map((uni) => ({
         label: uni,
