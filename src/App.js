@@ -1,11 +1,14 @@
 import {BrowserRouter} from "react-router-dom";
 import AppLayout from "./components/AppLayout";
+import {UserInfoProvider} from "./context/UserInfoContext";
 
 function App() {
 
     return (
         <BrowserRouter>
-            <AppLayout/>
+            <UserInfoProvider>
+                <AppLayout />
+            </UserInfoProvider>
         </BrowserRouter>
     );
 }
