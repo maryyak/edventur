@@ -5,24 +5,38 @@ import {
     BellOutlined, UserOutlined
 } from "@ant-design/icons";
 import {Link} from "react-router-dom";
-import {notifications, userInfo} from "../utils/mock";
-const user = userInfo.find((u) => u.id === 2);
+import {notifications} from "../utils/mock";
+import {useUserInfo} from "../context/UserInfoContext";
+import useAuth from "../hooks/api/users/authUser";
+
 //тут надо еще добавить механизм выхода из аккаунта
 const Header = () => {
+    const { userInfo } = useUserInfo();
+    const { logout } = useAuth();
     const menu = (
         <Menu>
-            <Menu.Item key="account">
-                <Link to="/settings">
-                    <Flex gap={16}>
-                        {user.fio}
-                        <ArrowRightOutlined/>
-                    </Flex>
-                </Link>
-            </Menu.Item>
-            <Menu.Divider/>
-            <Menu.Item key="logout" danger>
-                Выйти
-            </Menu.Item>
+            {userInfo && userInfo?.username ? (
+                // Меню для авторизованного пользователя
+                <>
+                    <Menu.Item key="account">
+                        <Link to="/settings">
+                            <Flex gap={16}>
+                                {userInfo?.username}
+                                <ArrowRightOutlined/>
+                            </Flex>
+                        </Link>
+                    </Menu.Item>
+                    <Menu.Divider/>
+                    <Menu.Item key="logout" danger onClick={logout}>
+                        Выйти
+                    </Menu.Item>
+                </>
+            ) : (
+                // Меню для неавторизованного пользователя
+                <Menu.Item key="login" style={{backgroundColor: " #318d25", color: "#fff"}} >
+                    <Link to="/login">Войти</Link>
+                </Menu.Item>
+            )}
         </Menu>
     );
 
