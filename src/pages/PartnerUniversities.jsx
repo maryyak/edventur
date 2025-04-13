@@ -5,14 +5,12 @@ import {
 import React, { useState } from "react";
 import {assessments, programs, universities, userInfo} from "../utils/mock";
 import {UploadOutlined} from "@ant-design/icons";
-import {useNavigate} from "react-router-dom";
 
 const { Panel } = Collapse;
 
 const PartnerUniversities = () => {
     const [universitiesList, setUniversitiesList] = useState(universities);
     const [usersList, setUsersList] = useState(userInfo);
-    const navigate = useNavigate();
     const [newUniversityName, setNewUniversityName] = useState("");
     const [openRepForms, setOpenRepForms] = useState({});
     const [openProgForms, setOpenProgForms] = useState({});

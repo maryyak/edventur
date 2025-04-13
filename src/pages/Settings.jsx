@@ -11,7 +11,6 @@ const Settings = () => {
     const [form] = Form.useForm();
     const user = userInfo.find((u) => u.id === 2);
     const navigate = useNavigate();
-    const [selectedAssessment, setSelectedAssessment] = useState(null);
     const [programList, setProgramList] = useState(
         programs.filter((p) => p.university === user.uni)
     );
