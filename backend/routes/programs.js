@@ -1,11 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const { Program } = require('../models');
+const  { University } = require('../models')
+
 
 // Получить список программ
 router.get('/', async (req, res) => {
     try {
-        const programs = await Program.findAll();
+        const programs = await Program.findAll({
+            include: [
+                {
+                    model: University,
+                    through: { attributes: [] }
+                }
+            ]
+        });
         res.status(200).json(programs);
     } catch (error) {
         res.status(400).json({ error: error.message });

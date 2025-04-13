@@ -7,7 +7,10 @@ import Settings from "../pages/Settings";
 import Request from "../pages/Request";
 import Assessment from "../pages/Assesment/Assessment";
 import Applications from "../pages/Applications";
-
+import UniversityApplications from "../pages/UniversityApplications";
+import CreateAssesment from "../pages/CreateAssesment";
+import PartnerUniversities from "../pages/PartnerUniversities";
+import AllAssesments from "../pages/AllAssesments";
 export const routes = [
     {
         path: '/',
@@ -44,5 +47,21 @@ export const routes = [
     {
         path: '/applications',
         element: <Applications/>
+    },
+    {
+        path: '/universityApplications',
+        element: <UniversityApplications/>
+    },
+    {
+        path: '/createAssesment',
+        element: <CreateAssesment/>
+    },
+    {
+        path: '/partnerUniversities',
+        element: <PartnerUniversities/>
+    },
+    {
+        path: '/allAssesments',
+        element: <AllAssesments/>
     }
 ]

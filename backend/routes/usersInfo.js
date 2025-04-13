@@ -61,7 +61,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Создание JWT токена
-        const token = jwt.sign({ userId: user.id, username: user.fio }, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, username: user.fio }, JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({
             message: 'Login successful',
@@ -84,13 +84,12 @@ const authenticateJWT = (req, res, next) => {
         return res.status(401).json({ error: 'Access denied, no token provided' });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) {
-            return res.status(403).json({ error: 'Invalid token' });
-        }
-        req.user = user;
+    try {
+        req.user = jwt.verify(token, JWT_SECRET);
         next();
-    });
+    } catch (error) {
+        res.status(403).json({ message: "Неверный токен" });
+    }
 };
 
 //получение информации о пользователе по ID
@@ -165,4 +164,7 @@ router.delete('/:id', authenticateJWT, async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = {
+    router,
+    authenticateJWT,
+};

@@ -9,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'userId'
             });
 
+            User.belongsToMany(models.Program, {
+                through: models.UserProgram,
+                foreignKey: 'userId'
+            });
+
             User.belongsTo(models.University, {
                 foreignKey: 'universityId',
             });
@@ -37,7 +42,8 @@ module.exports = (sequelize, DataTypes) => {
             references: { model: 'Universities', key: 'id' },
             onUpdate: 'CASCADE',
             onDelete: 'SET NULL'
-        }
+        },
+        studyplan: { type: DataTypes.JSONB, allowNull: true },
     }, {
         sequelize,
         modelName: 'User',

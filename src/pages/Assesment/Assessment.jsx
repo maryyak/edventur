@@ -11,6 +11,9 @@ import {
 } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import style from './Assesment.module.scss';
+import { useRef } from 'react';
+import { Modal } from 'antd';
+
 
 const Assessment = () => {
     const { id } = useParams();
@@ -20,13 +23,18 @@ const Assessment = () => {
     const [submitted, setSubmitted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(2 * 60 * 60);
     const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
+    const timeoutRef = useRef(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
 
     useEffect(() => {
         const savedEndTime = localStorage.getItem(`assessment_end_time_${id}`);
         const endTime = savedEndTime ? Number(savedEndTime) : Date.now() + 2 * 60 * 60 * 1000;
+
         if (!savedEndTime) {
             localStorage.setItem(`assessment_end_time_${id}`, endTime.toString());
         }
+
         const updateTimer = () => {
             const now = Date.now();
             const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
@@ -36,10 +44,18 @@ const Assessment = () => {
                 handleSubmit();
             }
         };
+
         updateTimer();
         const timer = setInterval(updateTimer, 1000);
-        return () => clearInterval(timer);
+
+        return () => {
+            clearInterval(timer);
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
     }, [id]);
+
 
 
     const formatTime = (seconds) => {
@@ -59,10 +75,12 @@ const Assessment = () => {
     const handleSubmit = () => {
         setSubmitted(true);
         localStorage.removeItem(`assessment_end_time_${id}`);
-        setTimeout(() => {
+
+        timeoutRef.current = setTimeout(() => {
             navigate('/');
         }, 10000);
     };
+
 
 
     const handleNextQuestion = () => {
@@ -73,6 +91,20 @@ const Assessment = () => {
 
     return (
         <Flex vertical style={{ minHeight: '100vh' }}>
+            <Modal
+                title="Вы уверены, что хотите завершить ассесмент?"
+                open={isModalVisible}
+                onOk={() => {
+                    setIsModalVisible(false);
+                    handleSubmit();
+                }}
+                onCancel={() => setIsModalVisible(false)}
+                okText="Да, завершить"
+                cancelText="Отмена"
+                okButtonProps={{ danger: true }}
+            >
+                <Typography.Text>После завершения вы не сможете вернуться к вопросам.</Typography.Text>
+            </Modal>
             {!submitted && (
                 <Flex
                     justify="space-between"
@@ -112,11 +144,12 @@ const Assessment = () => {
                         size="small"
                         type="default"
                         danger
-                        onClick={handleSubmit}
+                        onClick={() => setIsModalVisible(true)}
                         style={{ fontSize: 12 }}
                     >
                         Завершить
                     </Button>
+
                 </Flex>
             )}
 
@@ -159,9 +192,10 @@ const Assessment = () => {
                                     Далее
                                 </Button>
                             ) : (
-                                <Button type="primary" onClick={handleSubmit}>
+                                <Button type="primary" onClick={() => setIsModalVisible(true)}>
                                     Завершить
                                 </Button>
+
                             )}
                         </Flex>
                     </Card>

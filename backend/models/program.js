@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'assessment'
             });
 
+            Program.belongsToMany(models.User, {
+                through: models.UserProgram,
+                foreignKey: 'programId'
+            });
+
             // Ассоциация многие ко многим с программами для похожих (самосвязь)
             Program.belongsToMany(models.Program, {
                 as: 'SimilarPrograms',   // Уникальный alias для первой ассоциации
