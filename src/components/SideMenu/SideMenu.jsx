@@ -21,15 +21,16 @@ const SideMenu = () => {
             icon: <HomeOutlined />,
             label: 'Главная',
         },
-        {
-            key: '/programs',
-            icon: <ReadOutlined />,
-            label: 'Образовательные программы',
-        },
+
 
     ];
 
     const studentItems = [
+        {
+            key: '/programs',
+            icon: <ReadOutlined />,
+            label: 'Аналитика программ',
+        },
         {
             key: '/applications',
             icon: <SolutionOutlined />,
@@ -43,6 +44,11 @@ const SideMenu = () => {
     ];
 
     const agentItems = [
+        {
+            key: '/programs',
+            icon: <ReadOutlined />,
+            label: 'Аналитика программ',
+        },
         {
             key: '/universityApplications',
             icon: <SolutionOutlined />,
@@ -62,6 +68,11 @@ const SideMenu = () => {
     ];
 
     const adminItems = [
+        {
+            key: '/programsStatistic',
+            icon: <ReadOutlined />,
+            label: 'Образовательные программы',
+        },
         {
             key: '/allAssesments',
             icon: <SnippetsOutlined />,

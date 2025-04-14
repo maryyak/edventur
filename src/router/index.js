@@ -11,6 +11,7 @@ import UniversityApplications from "../pages/UniversityApplications";
 import CreateAssesment from "../pages/CreateAssesment";
 import PartnerUniversities from "../pages/PartnerUniversities";
 import AllAssesments from "../pages/AllAssesments";
+import ProgramsStatistic from "../pages/ProgramsStatistic";
 export const routes = [
     {
         path: '/',
@@ -63,5 +64,9 @@ export const routes = [
     {
         path: '/allAssesments',
         element: <AllAssesments/>
+    },
+    {
+        path: '/programsStatistic',
+        element: <ProgramsStatistic/>
     }
 ]
