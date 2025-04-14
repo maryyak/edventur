@@ -71,7 +71,7 @@ const SideMenu = () => {
         {
             key: '/programsStatistic',
             icon: <ReadOutlined />,
-            label: 'Образовательные программы',
+            label: 'Аналитика программ',
         },
         {
             key: '/allAssesments',
