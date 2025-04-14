@@ -19,6 +19,12 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE'
             });
 
+            University.hasMany(models.Assessment, {
+                foreignKey: 'universityId',
+                onUpdate: 'CASCADE',
+                onDelete: 'SET NULL'
+            })
+
         }
     }
 

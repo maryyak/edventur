@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
             Assessment.hasMany(models.Program, {
                 foreignKey: 'assessment'
             });
+
+            Assessment.belongsTo(models.University, {
+                foreignKey: 'universityId'
+            })
         }
     }
 
@@ -20,7 +24,14 @@ module.exports = (sequelize, DataTypes) => {
         id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         title: { type: DataTypes.STRING, allowNull: false, unique: true },
         description: { type: DataTypes.TEXT, allowNull: true },
-        questions: { type: DataTypes.JSON, allowNull: false }
+        questions: { type: DataTypes.JSON, allowNull: false },
+        universityId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: { model: 'Universities', key: 'id' },
+            onUpdate: 'CASCADE',
+            onDelete: 'SET NULL'
+        }
     }, {
         sequelize,
         modelName: 'Assessment',
