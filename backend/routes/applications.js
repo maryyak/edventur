@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Application, User, University } = require('../models');
+const { Application, User, University, Program } = require('../models');
 
 // Получить все заявки
 router.get('/', async (req, res) => {
@@ -20,7 +20,7 @@ router.get('/user/:userId', async (req, res) => {
         const { userId } = req.params;
         const applications = await Application.findAll({
             where: { userId },
-            include: [University]
+            include: [Program]
         });
         res.status(200).json(applications);
     } catch (error) {
@@ -49,7 +49,7 @@ router.get('/university/:universityId', async (req, res) => {
         const { universityId } = req.params;
         const applications = await Application.findAll({
             where: { universityId },
-            include: [User]
+            include: [Program]
         });
         res.status(200).json(applications);
     } catch (error) {

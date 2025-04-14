@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Assessment } = require('../models');
+const { Assessment, University } = require('../models');
 
 // Добавление нового ассессмента
 router.post('/', async (req, res) => {
@@ -15,12 +15,38 @@ router.post('/', async (req, res) => {
 // Получение всех ассессментов
 router.get('/', async (req, res) => {
     try {
-        const assessments = await Assessment.findAll();
+        const assessments = await Assessment.findAll({
+            include: [{
+                model: University
+            }]
+        });
         res.status(200).json(assessments);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
+
+//Получение всех ассессментов конкретного университета
+router.get('/university/:universityId', async (req, res) => {
+    const { universityId } = req.params;
+    try {
+        const universityAssessments = await University.findByPk(universityId, {
+            include: [{
+                model: Assessment
+            }]
+        });
+
+        if (!universityAssessments) {
+            console.log("Университет не найден" )
+            return res.status(404).json({ error: "Университет не найден" });
+        }
+
+        res.status(200).json(universityAssessments);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
 
 // Редактирование ассессмента
 router.put('/:id', async (req, res) => {
@@ -47,5 +73,7 @@ router.delete('/:id', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+
+
 
 module.exports = router;
