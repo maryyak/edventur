@@ -205,7 +205,7 @@ const ProgramsStatistic = () => {
                                 {isAdmin && (
                                     <Descriptions.Item label="Представитель">
                                         {(() => {
-                                            const agent = representatives[program.Universities[0].id];
+                                            const agent = representatives[program.Universities[0]?.id];
                                             return agent ? (
                                                 <Space direction="vertical" size={0}>
                                                     <Text>{agent.fio}</Text>
