@@ -312,7 +312,7 @@ const ProgramsStatistic = () => {
                                 isAdmin
                                     ? getTotalClicks()
                                     : programs
-                                        .filter((program) => program.Universities[0].id === userUniversity)
+                                        .filter((program) => program.Universities[0]?.id === userUniversity)
                                         .reduce((acc, program) => acc + (
                                             program.UserPrograms?.reduce((sum, up) => sum + (up.clicks || 0), 0) || 0
                                         ), 0)
@@ -326,7 +326,7 @@ const ProgramsStatistic = () => {
                     <Card>
                         <Statistic
                             title="Программ"
-                            value={isAdmin ? programs.length : programs.filter((program) => program.Universities[0].id === userUniversity).length}
+                            value={isAdmin ? programs.length : programs.filter((program) => program.Universities[0]?.id === userUniversity).length}
                         />
                     </Card>
                 </Col>
