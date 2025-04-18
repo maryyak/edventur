@@ -154,7 +154,7 @@ const EducationPrograms = () => {
                                         <Flex vertical gap={16}>
                                             <Descriptions column={1}>
                                                 <Descriptions.Item
-                                                    label="Описание">{program.description.slice(0, 100)}...</Descriptions.Item>
+                                                    label="Описание">{program.description?.slice(0, 100)}...</Descriptions.Item>
                                                 <Descriptions.Item
                                                     label="Уровень обучения">{program.level}</Descriptions.Item>
                                                 <Descriptions.Item

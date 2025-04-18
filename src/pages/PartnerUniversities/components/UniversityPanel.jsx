@@ -23,7 +23,7 @@ import {getToken} from "../../../utils/token";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const UniversityPanel = ({university, isAdmin}) => {
-    const {programs, loading, error, mutate} = useUniversityPrograms(university.id)
+    const {programs, loading, error, mutate} = useUniversityPrograms(university?.id)
     const {users, fetchUsers} = useAuth()
 
     const [representative, setRepresentative] = useState(null);
