@@ -120,15 +120,15 @@ const ProgramsStatistic = () => {
 
     const filteredPrograms = sortedPrograms.filter(
         (program) =>
-            (isAdmin || program.Universities[0].id === userUniversity) &&
-            (!selectedUniversity || program.Universities[0].name === selectedUniversity) &&
-            (!selectedLevel || program.level === selectedLevel) &&
-            (!selectedForm || program.form === selectedForm)
+            (isAdmin || program?.Universities[0]?.id === userUniversity) &&
+            (!selectedUniversity || program?.Universities[0]?.name === selectedUniversity) &&
+            (!selectedLevel || program?.level === selectedLevel) &&
+            (!selectedForm || program?.form === selectedForm)
     );
 
     const groupedByUniversity = filteredPrograms.reduce((acc, program) => {
-        if (!acc[program.Universities[0].name]) acc[program.Universities[0].name] = [];
-        acc[program.Universities[0].name].push(program);
+        if (!acc[program.Universities[0]?.name]) acc[program.Universities[0]?.name] = [];
+        acc[program.Universities[0]?.name].push(program);
         return acc;
     }, {});
     const COLORS = ["#8884d8", "#82ca9d"];
