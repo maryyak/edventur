@@ -79,16 +79,18 @@ async function askOpenAISimilarity(course1, course2) {
 }
 
 function planToString(plan) {
-    let str = `Программа: ${plan.program}\n`;
-    str += `Степень: ${plan.degree}\n`;
+    if (!plan || typeof plan !== 'object') return 'Недопустимый план';
+
+    let str = `Программа: ${plan.program ?? 'нет данных'}\n`;
+    str += `Степень: ${plan.degree ?? 'нет данных'}\n`;
 
     if (Array.isArray(plan.semesters)) {
         plan.semesters.forEach((semester) => {
-            str += `Семестр ${semester.semester}:\n`;
+            str += `Семестр ${semester.semester ?? 'неизвестен'}:\n`;
             if (Array.isArray(semester.courses)) {
                 semester.courses.forEach((course, index) => {
-                    str += `  ${index + 1}. ${course.name} – ${course.hours} часов, `;
-                    str += `Тип: ${course.type}, Оценивание: ${course.assessment}\n`;
+                    str += `  ${index + 1}. ${course.name ?? 'без названия'} – ${course.hours ?? '?'} часов, `;
+                    str += `Тип: ${course.type ?? '?'}, Оценивание: ${course.assessment ?? '?'}\n`;
                 });
             }
             str += `\n`;
@@ -97,6 +99,7 @@ function planToString(plan) {
 
     return str;
 }
+
 
 async function calculateSimilarity(userPlan, existingPlan) {
     const userStr = planToString(userPlan);
