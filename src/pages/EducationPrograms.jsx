@@ -72,8 +72,8 @@ const EducationPrograms = () => {
 
 
     const universityOptions = universities.map((uni) => ({
-        label: uni,
-        value: uni,
+        label: uni.name,
+        value: uni.name, // Или можно uni.id, если вы фильтруете по id
     }));
 
     return (
