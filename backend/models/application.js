@@ -54,6 +54,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 'на рассмотрении'
         },
+        phone: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        document: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         createdAt: {
             type: DataTypes.DATE,
             allowNull: false,

@@ -108,6 +108,7 @@ const Login = () => {
                             </Button>
                         </Form.Item>
                     </Form>
+                    Нет аккаунта? <Link to={'/registration'}>Зарегистрироваться</Link>
                 </Spin>
                 {error && <Alert type="error" message="Ошибка авторизации"/>}
             </Flex>

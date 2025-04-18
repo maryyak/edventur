@@ -18,10 +18,12 @@ import styles from "./SingleProgram.module.scss"
 import {UserOutlined} from "@ant-design/icons";
 import {Link, useParams} from "react-router-dom";
 import usePrograms from "../../hooks/api/programs/usePrograms";
+import useAddProgramClick from "../../hooks/api/userPrograms/useAddProgramClick";
 
 const SingleProgram = () => {
     const {id} = useParams();
     const {data: program, loading, error} = usePrograms(id)
+    useAddProgramClick(id)
 
     if (program.length === 0) {
         return;
@@ -93,7 +95,7 @@ const SingleProgram = () => {
                     <Button color="primary" variant="outlined">Оставить отзыв</Button>
                 </Flex>
                 <div className={styles.reviewsGrid}>
-                    {program?.reviews.map((review) => (
+                    {program?.reviews?.map((review) => (
                         <Card>
                             <Flex justify="space-between" align="center">
                                 <Flex gap={16} align="center">

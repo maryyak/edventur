@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { UniversityProgram, University } = require('../models');
+const { UniversityProgram, University, Program } = require('../models');
 
 // Получить все связи между университетами и программами
 router.get('/', async (req, res) => {
@@ -25,10 +25,6 @@ router.get('/university/:universityId/programs', async (req, res) => {
         }
 
         const programs = await university.getPrograms();
-
-        if (programs.length === 0) {
-            return res.status(404).json({ error: 'No programs found for this university' });
-        }
 
         res.status(200).json(programs);
     } catch (error) {
@@ -66,6 +62,37 @@ router.post('/university/:universityId/program/:programId', async (req, res) => 
 
         const newLink = await UniversityProgram.create({ universityId, programId });
         res.status(201).json({ message: 'Link created successfully', link: newLink });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Создать новую программу и сразу связать её с университетом
+router.post('/university/:universityId/programs', async (req, res) => {
+    const { universityId } = req.params;
+    const values = req.body; // или другие поля, нужные для создания программы
+
+    try {
+        // Проверим, существует ли университет
+        const university = await University.findByPk(universityId);
+        if (!university) {
+            return res.status(404).json({ error: 'University not found' });
+        }
+
+        // Создаём программу
+        const newProgram = await Program.create(values);
+
+        // Создаём связь
+        await UniversityProgram.create({
+            universityId,
+            programId: newProgram.id,
+        });
+
+        res.status(201).json({
+            message: 'Program created and linked successfully',
+            program: newProgram
+        });
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

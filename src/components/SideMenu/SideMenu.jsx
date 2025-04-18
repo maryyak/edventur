@@ -1,67 +1,81 @@
 import React from 'react';
-import { Button, Flex, Layout, Menu } from "antd";
+import {Button, Flex, Layout, Menu} from "antd";
 import styles from "./SideMenu.module.scss";
 import {
     HomeOutlined, PhoneOutlined,
     ReadOutlined, SettingOutlined,
     SolutionOutlined, BookOutlined, SnippetsOutlined
 } from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import Logo from "../Logo";
 import {useUserInfo} from "../../context/UserInfoContext";
+import ContactsMailLinkWrapper from "../ContactsMailLinkWrapper";
 
 const SideMenu = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { userInfo } = useUserInfo();
+    const {userInfo} = useUserInfo();
 
-    const commonItems = [
+    const unauthorizedItems = [
         {
             key: '/',
-            icon: <HomeOutlined />,
+            icon: <HomeOutlined/>,
             label: 'Главная',
         },
-
-
+        {
+            key: '/programs',
+            icon: <ReadOutlined/>,
+            label: 'Образовательные программы',
+        },
     ];
 
     const studentItems = [
         {
+            key: '/',
+            icon: <HomeOutlined/>,
+            label: 'Главная',
+        },
+        {
             key: '/programs',
-            icon: <ReadOutlined />,
-            label: 'Аналитика программ',
+            icon: <ReadOutlined/>,
+            label: 'Образовательные программы',
         },
         {
             key: '/applications',
-            icon: <SolutionOutlined />,
+            icon: <SolutionOutlined/>,
             label: 'Мои заявки',
         },
         {
             key: '/settings',
-            icon: <SettingOutlined />,
+            icon: <SettingOutlined/>,
             label: 'Настройки аккаунта',
         },
     ];
 
-    const agentItems = [
+    const representativeItems = [
         {
-            key: '/programs',
-            icon: <ReadOutlined />,
+            key: '/',
+            icon: <HomeOutlined/>,
+            label: 'Главная',
+        },
+        {
+            key: '/programs-statistic',
+            icon: <ReadOutlined/>,
             label: 'Аналитика программ',
         },
         {
-            key: '/universityApplications',
-            icon: <SolutionOutlined />,
+            key: '/university-applications',
+            icon: <SolutionOutlined/>,
             label: 'Заявки от студентов',
         },
         {
-            key: '/allAssesments',
-            icon: <SnippetsOutlined />,
+            key: '/all-assessments',
+            icon: <SnippetsOutlined/>,
             label: 'Ассесменты',
         },
         {
             key: '/settings',
-            icon: <SettingOutlined />,
+            icon: <SettingOutlined/>,
             label: 'Настройки профиля',
         },
 
@@ -69,30 +83,35 @@ const SideMenu = () => {
 
     const adminItems = [
         {
-            key: '/programsStatistic',
-            icon: <ReadOutlined />,
+            key: '/',
+            icon: <HomeOutlined/>,
+            label: 'Главная',
+        },
+        {
+            key: '/programs-statistic',
+            icon: <ReadOutlined/>,
             label: 'Аналитика программ',
         },
         {
-            key: '/allAssesments',
-            icon: <SnippetsOutlined />,
+            key: '/all-assessments',
+            icon: <SnippetsOutlined/>,
             label: 'Ассесменты',
         },
         {
-            key: '/partnerUniversities',
-            icon: <BookOutlined />,
+            key: '/partner-universities',
+            icon: <BookOutlined/>,
             label: 'ВУЗы-партнеры',
         },
 
     ];
 
     const menuItems = userInfo?.role === 'student'
-        ? [...commonItems, ...studentItems]
+        ? studentItems
         : userInfo?.role === 'representative'
-            ? [...commonItems, ...agentItems]
-            :userInfo?.role === 'admin'
-                ? [...commonItems, ...adminItems]
-            : [...commonItems];
+            ? representativeItems
+            : userInfo?.role === 'admin'
+                ? adminItems
+                : unauthorizedItems;
 
     const onClick = (item) => {
         navigate(item.key);
@@ -102,20 +121,23 @@ const SideMenu = () => {
         <Layout.Sider width="360px">
             <Flex vertical justify="space-between" className={styles.siderMenu}>
                 <Flex vertical gap={50}>
-                    <Logo style={{ padding: '0 16px' }} color={'#08A652'} />
+                    <Logo style={{padding: '0 16px'}} color={'#08A652'}/>
                     <Menu
                         onClick={onClick}
                         selectedKeys={[location.pathname]}
                         items={menuItems}
                     />
                 </Flex>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    icon={<PhoneOutlined />}
-                >
-                    Связаться с поддержкой
-                </Button>
+                <ContactsMailLinkWrapper>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        icon={<PhoneOutlined/>}
+                        style={{width:'100%'}}
+                    >
+                        Связаться с поддержкой
+                    </Button>
+                </ContactsMailLinkWrapper>
             </Flex>
         </Layout.Sider>
     );

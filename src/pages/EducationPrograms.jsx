@@ -20,23 +20,34 @@ import {Link} from "react-router-dom";
 import usePrograms from "../hooks/api/programs/usePrograms";
 import useUniversities from "../hooks/api/universities/useUniversities";
 import {uploadProps} from "../utils/uploadProps";
+import {useUserInfo} from "../context/UserInfoContext";
 
 const EducationPrograms = () => {
     const [selectedUniversity, setSelectedUniversity] = useState(null);
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [selectedForm, setSelectedForm] = useState(null);
+    const { userInfo } = useUserInfo();
 
-    const {data: programs, loading, error} = usePrograms();
+    const {data: programs, loading, error, mutate} = usePrograms();
     const {universities} = useUniversities();
 
-    const sortedPrograms = [...programs].sort((a, b) => {
+    const processedPrograms = programs.map(program => {
+        const userProgram = program.UserPrograms.find(up => up.userId === userInfo?.id);
+
+        return {
+            ...program,
+            similarity: userProgram ? userProgram.similarityPercentage : null
+        };
+    });
+
+    const sortedPrograms = [...processedPrograms].sort((a, b) => {
         const aBelowThreshold = a.similarity < a.min_similarity;
         const bBelowThreshold = b.similarity < b.min_similarity;
 
         if (aBelowThreshold !== bBelowThreshold) {
             return aBelowThreshold ? 1 : -1;
         }
-        return b.similarity - a.similarity;
+        return (b.similarity ?? 0) - (a.similarity ?? 0);
     });
 
     // Фильтрация программ по выбранным критериям
@@ -97,9 +108,11 @@ const EducationPrograms = () => {
                     ]}
                 />
             </Space>
-            <Upload {...uploadProps('studyplan')}>
-                <Button type={"primary"} icon={<UploadOutlined/>}>Загрузите ваш учебный план</Button>
-            </Upload>
+            {userInfo?.id &&
+                <Upload {...uploadProps('studyplan', mutate)}>
+                    <Button type={"primary"} icon={<UploadOutlined/>}>Загрузите ваш учебный план</Button>
+                </Upload>
+            }
             <Spin spinning={loading}>
                 {
                     error && <Alert message="Ошибка при загрузке образовательных программ" type="error"/>
@@ -126,7 +139,7 @@ const EducationPrograms = () => {
                                                     {program.similarity && (
                                                         <Typography.Text
                                                             type={program.similarity >= program.min_similarity ? "success" : "danger"}>
-                                                            Схожесть: {program.similarity * 100}%
+                                                            Схожесть: {(program.similarity * 100).toFixed()}%
                                                         </Typography.Text>
                                                     )}
                                                     {averageRating && (

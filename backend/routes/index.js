@@ -10,6 +10,7 @@ router.use("/assessments", require("./assessments"))
 router.use("/user-assessments", require("./userAssessments"))
 router.use("/university-programs", require("./universityPrograms"))
 router.use("/applications", require("./applications"))
+router.use("/user-programs", require("./userPrograms"))
 router.use("/upload", require("./upload"));
 
 module.exports = router;

@@ -1,14 +1,15 @@
 import {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from "react-router-dom";
-import {setToken} from "../../../utils/token";
+import {getToken, setToken} from "../../../utils/token";
 import {useUserInfo} from "../../../context/UserInfoContext";
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 const useAuth = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [user, setUser] = useState();
     const navigate = useNavigate();
-    const [users, setUsers] = useState(null);
     const location = useLocation();
     const {setUserInfo} = useUserInfo();
 
@@ -31,7 +32,7 @@ const useAuth = () => {
         try {
             const response = await fetch(`${API_URL}/user/register`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     fio: values.fio,
                     email: values.email,
@@ -63,8 +64,8 @@ const useAuth = () => {
         try {
             const response = await fetch(`${API_URL}/user/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password}),
             });
 
             const data = await response.json();
@@ -74,7 +75,10 @@ const useAuth = () => {
             }
 
             console.log("Пользователь авторизован:", data);
-            setToken(data.token)
+            const expiresIn = data.expiresIn || 3600; // например, 1 час по умолчанию
+            const expiresAt = Date.now() + expiresIn * 1000;
+
+            setToken(data.token, expiresAt);
             return data.user;
         } catch (err) {
             setError(err.message);
@@ -97,21 +101,40 @@ const useAuth = () => {
         }
     };
 
+    const fetchUser = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${API_URL}/user/current`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getToken()}`,
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error("Ошибка загрузки данных пользователя");
+            setUser(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_URL}/users`, {
+            const response = await fetch(`${API_URL}/user`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                credentials: "include",
             });
 
             const data = await response.json();
             if (!response.ok) throw new Error("Ошибка загрузки данных пользователей");
-            setUsers(data);
-
+            return data;
         } catch (err) {
             setError(err.message);
         } finally {
@@ -126,10 +149,10 @@ const useAuth = () => {
         }
 
         // Если мы не на странице логина или регистрации, выполняем fetch
-        fetchUsers();
+        fetchUser();
     }, [location]);
 
-    return { users, register, login, logout, checkAuth, loading, error };
+    return {user, fetchUser, register, login, logout, checkAuth, loading, error, fetchUsers};
 };
 
 export default useAuth;

@@ -32,8 +32,19 @@ module.exports = (sequelize, DataTypes) => {
         similarityPercentage: {
             type: DataTypes.FLOAT,
             allowNull: true
+        },
+        clicks: {
+            type: DataTypes.INTEGER,
+            allowNull: true
         }
     }, {
+        indexes: [
+            {
+                unique: true,
+                fields: ['userId', 'programId'],
+                name: 'user_program_unique'
+            }
+        ],
         sequelize,
         modelName: 'UserProgram',
         timestamps: false

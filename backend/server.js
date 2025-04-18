@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
     res.send("Сервер работает!");
 });
 
-app.use("/api/upload", express.static(path.join(__dirname, "upload")));
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Запуск сервера
 app.listen(PORT, () => {

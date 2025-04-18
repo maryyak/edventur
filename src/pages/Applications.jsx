@@ -1,20 +1,18 @@
 import React from 'react';
 import {Alert, Card, Col, Row, Space, Spin, Tag, Typography} from "antd";
-import {CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, StopOutlined} from "@ant-design/icons";
+import {CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined} from "@ant-design/icons";
 import useUserApplications from "../hooks/api/applications/useUserApplications";
 import {useUserInfo} from "../context/UserInfoContext";
 
 //Здесь по-хорошему надо добавить отображение страницы по типу "У вас пока нет заявок", если applications - пустой массив
-const statusTag = (status) => {
+export const statusTag = (status) => {
     switch (status) {
         case "на рассмотрении":
             return <Tag icon={<ClockCircleOutlined/>} color="processing">На рассмотрении</Tag>;
-        case "одоберно":
+        case "принято":
             return <Tag icon={<CheckCircleOutlined/>} color="success">Одобрено</Tag>;
         case "отказано":
             return <Tag icon={<CloseCircleOutlined/>} color="error">Отказано</Tag>;
-        case "Отменено": //В бд нет такого статуса в enum
-            return <Tag icon={<StopOutlined/>} color="default">Отменено</Tag>;
         default:
             return <Tag color="default">{status}</Tag>;
     }

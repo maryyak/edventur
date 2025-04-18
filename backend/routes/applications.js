@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { Application, User, University, Program } = require('../models');
+const {authenticateJWT} = require("../routes/usersInfo");
 
 // Получить все заявки
 router.get('/', async (req, res) => {
     try {
         const applications = await Application.findAll({
-            include: [User, University]
+            include: [User, University, Program]
         });
         res.status(200).json(applications);
     } catch (error) {
@@ -58,9 +59,23 @@ router.get('/university/:universityId', async (req, res) => {
 });
 
 // Создать новую заявку
-router.post('/', async (req, res) => {
+router.post('/program/:id', authenticateJWT, async (req, res) => {
     try {
-        const newApp = await Application.create(req.body);
+        const programId = req.params.id
+        const program = await Program.findByPk(programId, {
+            include: {
+                model: University,
+                attributes: ['id']
+            }
+        });
+        const newApp = await Application.create(
+            {
+                userId: req.user.id,
+                universityId: program.Universities[0].id,
+                programId: programId,
+                phone: req.body.phone
+            }
+        );
         res.status(201).json(newApp);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -68,15 +83,13 @@ router.post('/', async (req, res) => {
 });
 
 // Обновить статус заявки
-router.patch('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
-        const { status } = req.body;
         const { id } = req.params;
         const app = await Application.findByPk(id);
         if (!app) return res.status(404).json({ error: 'Заявка не найдена' });
 
-        app.status = status;
-        await app.save();
+        await app.update(req.body);
         res.status(200).json(app);
     } catch (error) {
         res.status(400).json({ error: error.message });

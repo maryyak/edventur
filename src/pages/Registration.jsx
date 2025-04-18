@@ -31,7 +31,7 @@ const Registration = () => {
             // Сохраняем в контексте
             setUserInfo(userData);
 
-            navigate("/");
+            navigate("/login");
 
         }
     }, [user, navigate, setUserInfo]);

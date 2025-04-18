@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Program } = require('../models');
-const  { University } = require('../models')
+const  { University, UserProgram, UniversityProgram, User } = require('../models')
 
 
 // Получить список программ
@@ -11,7 +11,10 @@ router.get('/', async (req, res) => {
             include: [
                 {
                     model: University,
-                    through: { attributes: [] }
+                    through: {attributes: []}
+                },
+                {
+                    model: UserProgram
                 }
             ]
         });
@@ -69,9 +72,30 @@ router.get('/:id', async (req, res) => {
         if (!program) {
             return res.status(404).json({ error: 'Program not found' });
         }
+        res.status(200).json(program);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
-        const updatedProgram = await program.update(req.body);
-        res.status(200).json(updatedProgram);
+router.get('/:id/representative', async (req, res) => {
+    try {
+        const program = await Program.findByPk(req.params.id, {
+            include: {
+                model: University,
+                include: {
+                    model: User,
+                }
+            }
+        });
+
+        if (!program) {
+            return res.status(404).json({ error: 'Program not found' });
+        }
+
+        const representative = program.Universities[0].Users[0]
+
+        res.status(200).json(representative);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -95,13 +119,16 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        const program = await Program.findByPk(req.params.id);
+        const id = req.params.id;
 
-        if (!program) {
-            return res.status(404).json({ error: 'Program not found' });
-        }
+        await UniversityProgram.destroy({
+            where: { programId: id }
+        });
 
-        await program.destroy();
+        await Program.destroy({
+            where: { id: id }
+        });
+
         res.status(200).json({ message: 'Program deleted successfully' });
     } catch (error) {
         res.status(400).json({ error: error.message });

@@ -1,134 +1,181 @@
-import React from 'react';
-import {Alert, Button, Card, Col, Flex, Form, Input, message, Row, Typography, Upload} from "antd";
+import React, {useEffect, useState} from 'react';
+import {Alert, Button, Card, Col, Flex, Form, Input, message, Row, Spin, Typography, Upload} from "antd";
 import {Link, useParams} from "react-router-dom";
-import {programs, userInfo} from "../utils/mock";
 import {UploadOutlined} from "@ant-design/icons";
+import {useUserInfo} from "../context/UserInfoContext";
+import usePrograms from "../hooks/api/programs/usePrograms";
+import useProgramRepresentative from "../hooks/api/programs/useProgramRepresentative";
+import {getToken} from "../utils/token";
+import {uploadProps} from "../utils/uploadProps";
+import useUserApplications from "../hooks/api/applications/useUserApplications";
+import useUserAssessments from "../hooks/api/assessments/useUserAssessments";
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Request = () => {
     const {id} = useParams();
-    const program = programs.find((p) => p.id === Number(id));
-    const needAssessment = program.assessment && !userInfo.assessments.includes(program.assessment);
+    const {data: program, loading: programLoading} = usePrograms(id);
+    const {userInfo} = useUserInfo();
+    const assessmentId = program?.assessment;
+
+    const {data: userAssessment, mutate: refetchUserAssessments, loading} = useUserAssessments(assessmentId);
+
+    const [needAssessment, setNeedAssessment] = useState(false);
+
+    useEffect(() => {
+        if (assessmentId) {
+            refetchUserAssessments();
+        }
+    }, [assessmentId]);
+
+    useEffect(() => {
+        if (!loading && !programLoading) {
+            setNeedAssessment(assessmentId && !userAssessment);
+        }
+    }, [assessmentId, userAssessment]);
+
     const [form] = Form.useForm();
+    const {data: representative} = useProgramRepresentative(id);
+    const {applications, mutate} = useUserApplications(userInfo?.id)
+    const [currentApplication, setCurrentApplication] = React.useState();
 
-    const props = {
-        name: 'file',
-        // action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload', реализовываешь апи для загрузки файлов(можно поглядеть как в конструкторе программ сделано)
-        headers: {
-            authorization: 'authorization-text',
-        },
-        onChange(info) {
-            if (info.file.status !== 'uploading') {
-                console.log(info.file, info.fileList);
-            }
-            if (info.file.status === 'done') {
-                message.success(`${info.file.name} file uploaded successfully`);
-            } else if (info.file.status === 'error') {
-                message.error(`${info.file.name} file upload failed.`);
-            }
-        },
-    };
+    useEffect(() => {
+        if (applications) {
+            setCurrentApplication(applications.find((application) => application.programId.toString() === id));
+        }
+    }, [applications]);
 
-    // TODO: представителя вуза брать из бд
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const handleRequestSend = async (values) => {
+        try {
+            const token = getToken()
+            const response = await fetch(`${API_URL}/applications/program/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(values)
+            });
+
+            if (!response.ok) {
+                throw new Error("Не удалось отправить заявку");
+            }
+
+            messageApi.success("Заявка отправлена");
+            mutate();
+
+        } catch (err) {
+            messageApi.error(err.message || "Произошла непредвиденная ошибка");
+        }
+    }
+
     return (
-        <Flex vertical gap={30}>
-            {needAssessment ? <>
-                    <Typography.Title>{program.title}</Typography.Title>
-                    <Alert message="Информация"
-                           description="Для подачи заявления на данную программу для начала пройдите ассесмент"
-                           type="info" showIcon
-                           action={
-                               <Link to={`/assessment/${program.assessment}`}>
-                                   <Button>
-                                       Пройти
-                                   </Button>
-                               </Link>
-                           }
-                    />
-                </>
-                :
-                <Row gutter={30}>
-                    <Col span={8}>
-                        <Typography.Title style={{marginTop: 0}}>Подача заявки</Typography.Title>
-                        <Flex vertical gap={30}>
-                            <Card>
-                                <Flex gap={30} align="center">
-                                    <div style={{width: '40px'}}>
-                                        <img style={{width: '100%'}} src="/university_representative.jpg"
-                                             alt="university representative"/>
-                                    </div>
-                                    <Flex vertical>
-                                        <Typography.Text style={{fontSize: 20, fontWeight: 500}}>Представитель
-                                            ВУЗа</Typography.Text>
-                                        <Typography.Text style={{fontSize: 18}}>Яковенко Мария
-                                            Сергеевна</Typography.Text>
-                                        <Typography.Link underline href="mailto:university_representative@gmail.com">
-                                            university_representative@gmail.com
-                                        </Typography.Link>
-                                    </Flex>
+        <>
+            {contextHolder}
+            <Spin spinning={loading || programLoading}>
+                <Flex vertical gap={30}>
+                    {needAssessment ? <>
+                            <Typography.Title>{program.title}</Typography.Title>
+                            <Alert message="Информация"
+                                   description="Для подачи заявления на данную программу для начала пройдите ассесмент"
+                                   type="info" showIcon
+                                   action={
+                                       <Link to={`/assessment/${program.assessment}`}>
+                                           <Button>
+                                               Пройти
+                                           </Button>
+                                       </Link>
+                                   }
+                            />
+                        </>
+                        :
+                        <Row gutter={30}>
+                            <Col span={8}>
+                                <Typography.Title style={{marginTop: 0}}>Подача заявки</Typography.Title>
+                                <Flex vertical gap={30}>
+                                    <Card>
+                                        <Flex gap={30} align="center">
+                                            <Flex vertical>
+                                                <Typography.Text style={{fontSize: 20, fontWeight: 500}}>Представитель
+                                                    ВУЗа</Typography.Text>
+                                                <Typography.Text
+                                                    style={{fontSize: 18}}>{representative.fio}</Typography.Text>
+                                                <Typography.Link underline href={`mailto:${representative.email}`}>
+                                                    {representative.email}
+                                                </Typography.Link>
+                                            </Flex>
+                                        </Flex>
+                                    </Card>
+                                    <Card>
+                                        <Flex gap={30} align="center">
+                                            <div style={{width: '40px'}}>
+                                                <img style={{width: '100%'}} src="/request_icon.png"
+                                                     alt="request_icon"/>
+                                            </div>
+                                            <Flex vertical>
+                                                <Typography.Text style={{fontSize: 20, fontWeight: 500}}>Шаблон
+                                                    заявления</Typography.Text>
+                                                <Typography.Link underline>
+                                                    Скачать
+                                                </Typography.Link>
+                                            </Flex>
+                                        </Flex>
+                                    </Card>
                                 </Flex>
-                            </Card>
-                            <Card>
-                                <Flex gap={30} align="center">
-                                    <div style={{width: '40px'}}>
-                                        <img style={{width: '100%'}} src="/request_icon.png"
-                                             alt="request_icon"/>
-                                    </div>
-                                    <Flex vertical>
-                                        <Typography.Text style={{fontSize: 20, fontWeight: 500}}>Шаблон
-                                            заявления</Typography.Text>
-                                        <Typography.Link underline>
-                                            Скачать
-                                        </Typography.Link>
-                                    </Flex>
-                                </Flex>
-                            </Card>
-                        </Flex>
-                    </Col>
-                    <Col span={16}>
-                        <Card>
-                            <Typography.Title level={3}>Заявка на образовательную программу:{" "}
-                                {program.title}</Typography.Title>
-                            <Typography.Text>Проверьте ваши данные и заполните заявление на участие в академической
-                                мобильности</Typography.Text>
-                            <Form
-                                layout="vertical"
-                                form={form}
-                                name="info"
-                                initialValues={userInfo}
-                                style={{marginTop: 30}}
-                            >
-                                <Form.Item
-                                    name="fio"
-                                    label="ФИО"
-                                >
-                                    <Input/>
-                                </Form.Item>
+                            </Col>
+                            <Col span={16}>
+                                <Card>
+                                    <Typography.Title level={3}>Заявка на образовательную программу:{" "}
+                                        {program.title}</Typography.Title>
+                                    <Typography.Text>Заполните заявление на участие в академической
+                                        мобильности</Typography.Text>
+                                    <Form
+                                        layout="vertical"
+                                        form={form}
+                                        name="info"
+                                        initialValues={userInfo}
+                                        style={{marginTop: 30}}
+                                        onFinish={(values) => handleRequestSend(values)}
+                                    >
+                                        {!currentApplication && (
+                                            <Form.Item
+                                                name="phone"
+                                                label="Контактный номер телефона"
+                                            >
+                                                <Input/>
+                                            </Form.Item>
+                                        )}
 
-                                <Form.Item
-                                    name="phone"
-                                    label="Контактный номер телефона"
-                                >
-                                    <Input/>
-                                </Form.Item>
-
-                                <Form.Item>
-                                    <Flex gap={16}>
-                                        <Upload {...props}>
-                                            <Button icon={<UploadOutlined/>}>Прикрепить заявление</Button>
-                                        </Upload>
-                                        <Form.Item label={null}>
-                                            <Button type="primary" htmlType="submit">
-                                                Сохранить
-                                            </Button>
+                                        <Form.Item>
+                                            <Flex gap={16}>
+                                                {!currentApplication && (
+                                                    <Button type="primary" htmlType="submit">
+                                                        Хочу участвовать
+                                                    </Button>
+                                                )}
+                                                {currentApplication && (
+                                                    <Flex vertical gap={16}>
+                                                        {currentApplication.document &&
+                                                            <a href={`${API_URL}/${currentApplication.document}`}>Текущее
+                                                                заявление</a>}
+                                                        <Upload {...uploadProps('application', mutate, {programId: id})}>
+                                                            <Button icon={<UploadOutlined/>}>Прикрепить или обновить
+                                                                заявление</Button>
+                                                        </Upload>
+                                                    </Flex>
+                                                )}
+                                            </Flex>
                                         </Form.Item>
-                                    </Flex>
-                                </Form.Item>
-                            </Form>
-                        </Card>
-                    </Col>
-                </Row>
-            }
-        </Flex>
+                                    </Form>
+                                </Card>
+                            </Col>
+                        </Row>
+                    }
+                </Flex>
+            </Spin>
+        </>
     );
 };
 

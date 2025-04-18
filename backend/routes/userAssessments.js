@@ -1,27 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const { UserAssessment } = require('../models')
+const {authenticateJWT} = require("./usersInfo");
 
 // Получение результата ассессмента для конкретного пользователя
-router.get('/:userId/:assessmentId', async (req, res) => {
+router.get('/:assessmentId', authenticateJWT, async (req, res) => {
     try {
-        const { userId, assessmentId } = req.params;
+        const { assessmentId } = req.params;
+        const userId = req.user.id
 
         const relation = await UserAssessment.findOne({
             where: { userId, assessmentId }
         });
 
         if (!relation) {
-            return res.status(404).json({ error: 'Assessment result not found for this user' });
+            return res.status(200).json(null)
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             userId: relation.userId,
             assessmentId: relation.assessmentId,
             result: relation.result
         });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        return res.status(400).json({ error: error.message });
     }
 });
 

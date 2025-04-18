@@ -97,6 +97,45 @@ const authenticateJWT = (req, res, next) => {
     }
 };
 
+router.get('/', async (req, res) => {
+    try {
+        const users = await User.findAll();
+        const sanitizedUsers = users.map(user => {
+            const userData = user.get();
+            delete userData.password;
+            return userData;
+        });
+
+        res.status(200).json(sanitizedUsers);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+//получение информации о пользователе текущем
+router.get('/current', authenticateJWT, async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const user = await User.findByPk(userId, {
+            include: {
+                model: University,
+            }
+        });
+
+        if (user) {
+            // Удаляем пароль из объекта перед отправкой
+            const userData = user.get();
+            delete userData.password;  // Убираем пароль из данных
+
+            res.status(200).json(userData);  // Отправляем данные без пароля
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
 //получение информации о пользователе по ID
 router.get('/:userId', authenticateJWT, async (req, res) => {
     const { userId } = req.params;

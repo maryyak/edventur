@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
         course: { type: DataTypes.STRING, allowNull: true },
         direction: { type: DataTypes.STRING, allowNull: true },
         score: { type: DataTypes.STRING, allowNull: true },
+        scoreDoc: { type: DataTypes.STRING, allowNull: true },
         role: { type: DataTypes.ENUM('student', 'admin', 'representative'), allowNull: false},
         universityId: {
             type: DataTypes.INTEGER,

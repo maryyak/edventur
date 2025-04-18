@@ -9,7 +9,7 @@ import Assessment from "../pages/Assesment/Assessment";
 import Applications from "../pages/Applications";
 import UniversityApplications from "../pages/UniversityApplications";
 import CreateAssesment from "../pages/CreateAssesment";
-import PartnerUniversities from "../pages/PartnerUniversities";
+import PartnerUniversities from "../pages/PartnerUniversities/PartnerUniversities";
 import AllAssesments from "../pages/AllAssesments";
 import ProgramsStatistic from "../pages/ProgramsStatistic";
 export const routes = [
@@ -41,6 +41,9 @@ export const routes = [
         path: '/request/:id',
         element: <Request/>
     },
+]
+
+export const privateRoutes = [
     {
         path: '/assessment/:id',
         element: <Assessment/>
@@ -50,23 +53,23 @@ export const routes = [
         element: <Applications/>
     },
     {
-        path: '/universityApplications',
+        path: '/university-applications',
         element: <UniversityApplications/>
     },
     {
-        path: '/createAssesment',
+        path: '/create-assessment',
         element: <CreateAssesment/>
     },
     {
-        path: '/partnerUniversities',
+        path: '/partner-universities',
         element: <PartnerUniversities/>
     },
     {
-        path: '/allAssesments',
+        path: '/all-assessments',
         element: <AllAssesments/>
     },
     {
-        path: '/programsStatistic',
+        path: '/programs-statistic',
         element: <ProgramsStatistic/>
     }
 ]

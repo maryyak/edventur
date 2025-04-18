@@ -2,6 +2,7 @@ import React from "react";
 import {Typography, Row, Col, Card, Avatar, Flex, Steps, Button, Collapse, Spin, Alert} from "antd";
 import {Link} from "react-router-dom";
 import useUniversities from "../hooks/api/universities/useUniversities";
+import ContactsMailLinkWrapper from "../components/ContactsMailLinkWrapper";
 
 
 const steps = [
@@ -26,34 +27,46 @@ const items = [
     {
         key: "1",
         label: "Что такое Edventure?",
-        children: <Typography.Text>Edventure (educational adventure) – это цифровая платформа, которая помогает
-            студентам находить подходящие программы внутрироссийского семестрового обмена и участвовать в
-            них.</Typography.Text>,
+        children: <Typography.Text>
+            Edventure (educational adventure) – это цифровая платформа, которая помогает студентам находить
+            подходящие программы внутрироссийского семестрового обмена и участвовать в них.
+        </Typography.Text>,
         style: {marginBottom: "20px"},
     },
     {
         key: "2",
         label: "Как подать заявку на обмен?",
-        children: <Typography.Text>Вы можете зарегистрироваться на платформе и заполнить заявку в личном
-            кабинете.</Typography.Text>,
+        children: <Typography.Text>
+            Вы можете зарегистрироваться на платформе и заполнить заявку в личном кабинете.
+        </Typography.Text>,
         style: {marginBottom: "20px"},
     },
     {
         key: "3",
         label: "Как вуз может стать партнером платформы?",
-        children: <Typography.Text></Typography.Text>,
+        children: <Typography.Text>
+            Вузу необходимо оставить заявку на сотрудничество через форму обратной связи на сайте или связаться
+            с командой Edventure напрямую. После согласования условий партнёрства будет подписано соглашение о
+            взаимодействии.
+        </Typography.Text>,
         style: {marginBottom: "20px"},
     },
     {
         key: "4",
         label: "Какие документы нужны для участия в обмене?",
-        children: <Typography.Text></Typography.Text>,
+        children: <Typography.Text>
+            Обычно требуются: паспорт, справка об успеваемости, мотивационное письмо и заявление от родного вуза.
+            Точный список документов зависит от принимающего университета.
+        </Typography.Text>,
         style: {marginBottom: "20px"},
     },
     {
         key: "5",
         label: "Сколько стоит участие в программе обмена?",
-        children: <Typography.Text></Typography.Text>,
+        children: <Typography.Text>
+            Участие в программе обмена, как правило, бесплатное. Студент продолжает обучаться на бюджете или по
+            контракту в своем вузе. Однако могут возникнуть дополнительные расходы, такие как проживание и проезд.
+        </Typography.Text>,
     },
 ];
 
@@ -155,12 +168,14 @@ const HomePage = () => {
             <Flex gap={37}>
                 <Flex vertical>
                     <Typography.Title level={2} id='faq'>Отвечаем на частые вопросы</Typography.Title>
-                    <Button style={{
-                        backgroundColor: "#318d25",
-                        color: "#fff",
-                        width: "fit-content",
-                        padding: "18px 28px",
-                    }}>Задать вопрос</Button>
+                    <ContactsMailLinkWrapper>
+                        <Button style={{
+                            backgroundColor: "#318d25",
+                            color: "#fff",
+                            width: "fit-content",
+                            padding: "18px 28px",
+                        }}>Задать вопрос</Button>
+                    </ContactsMailLinkWrapper>
                     <img src="/homepage_quastion.png" alt="student" style={{width: 304}}/>
                 </Flex>
                 <Collapse

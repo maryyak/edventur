@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             UniversityProgram.belongsTo(models.Program, {
                 foreignKey: 'programId', // связываем по programId
                 as: 'Program',  // Уникальный alias для ассоциации
+                onDelete: 'CASCADE'
             });
         }
     }

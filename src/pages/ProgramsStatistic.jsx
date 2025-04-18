@@ -14,14 +14,13 @@ import {
     List,
     Flex,
 } from "antd";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     StarFilled,
     FileAddFilled,
     EyeFilled,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
-import { programs, applications, universities, userInfo } from "../utils/mock";
+import {Link} from "react-router-dom";
 import {
     PieChart,
     Pie,
@@ -32,42 +31,78 @@ import {
     Bar,
     XAxis,
     YAxis,
-} from "recharts"; //библиотека для диаграмм
-const { Text } = Typography;
-const getTotalClicks = () =>
-    programs.reduce((acc, program) => acc + (program.clicks || 0), 0);
+} from "recharts";
+import {useUserInfo} from "../context/UserInfoContext";
+import usePrograms from "../hooks/api/programs/usePrograms";
+import useApplications from "../hooks/api/applications/useApplications";
+import useUniversities from "../hooks/api/universities/useUniversities";
+import ContactsMailLinkWrapper from "../components/ContactsMailLinkWrapper";
+const {Text} = Typography;
 
-const getTotalApplications = () =>
-    applications.reduce((acc, app) => acc + (app.program ? 1 : 0), 0);
-
-const getProgramApplicationsData = (programId) => {
-    const program = programs.find((p) => p.id === programId);
-    if (!program) return [];
-
-    const programApplications = applications.filter(
-        (app) => app.program.id === programId
-    );
-    return [
-        { name: "Клики", value: program.clicks || 0 },
-        { name: "Заявки", value: programApplications.length },
-    ];
-};
-
-const getAgentByUniversity = (university) => {
-    return userInfo.find(
-        (user) => user.role === "agent" && user.uni === university
-    );
-};
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ProgramsStatistic = () => {
-    const currentUser = userInfo.find(user => user.id === 3); // ЗДЕСЬ МЕНЯТЬ ПОЛЬЗОВАТЕЛЯ
-    const isAdmin = currentUser.role === "admin";
-    const userUniversity = currentUser.uni;
+    const {userInfo} = useUserInfo()
+    const isAdmin = userInfo?.role === "admin";
+    const userUniversity = userInfo?.universityId;
+    const {data: programs} = usePrograms();
+    const {applications} = useApplications();
+    const {universities} = useUniversities();
 
     const [selectedUniversity, setSelectedUniversity] = useState(null);
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [selectedForm, setSelectedForm] = useState(null);
     const [showReviews, setShowReviews] = useState({});
+
+    const getTotalClicks = () =>
+        programs.reduce((total, program) => {
+            const clicks = program.UserPrograms?.reduce((sum, up) => {
+                return sum + (up.clicks || 0);
+            }, 0) || 0;
+            return total + clicks;
+        }, 0);
+
+
+    const getProgramApplicationsData = (programId) => {
+        const program = programs.find((p) => p.id === programId);
+        if (!program) return [];
+        const programApplications = applications.filter(
+            (app) => app.programId === programId
+        );
+        return [
+            {name: "Клики", value: program.UserPrograms?.reduce((sum, up) => sum + (up.clicks || 0), 0) || 0},
+            {name: "Заявки", value: programApplications.length},
+        ];
+    };
+
+    const [representatives, setRepresentatives] = useState({});
+
+    useEffect(() => {
+        const fetchRepresentatives = async () => {
+            const reps = {};
+
+            for (const uni of universities) {
+                try {
+                    const response = await fetch(`${API_URL}/universities/${uni.id}/representative`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        reps[uni.id] = data;
+                    } else {
+                        reps[uni.id] = null;
+                    }
+                } catch (error) {
+                    reps[uni.id] = null;
+                }
+            }
+
+            setRepresentatives(reps);
+        };
+
+        if (universities.length) {
+            fetchRepresentatives();
+        }
+    }, [universities]);
+
 
     const toggleReviews = (id) => {
         setShowReviews((prev) => ({
@@ -85,18 +120,17 @@ const ProgramsStatistic = () => {
 
     const filteredPrograms = sortedPrograms.filter(
         (program) =>
-            (isAdmin || program.university === userUniversity) &&
-            (!selectedUniversity || program.university === selectedUniversity) &&
+            (isAdmin || program.Universities[0].id === userUniversity) &&
+            (!selectedUniversity || program.Universities[0].name === selectedUniversity) &&
             (!selectedLevel || program.level === selectedLevel) &&
             (!selectedForm || program.form === selectedForm)
     );
 
     const groupedByUniversity = filteredPrograms.reduce((acc, program) => {
-        if (!acc[program.university]) acc[program.university] = [];
-        acc[program.university].push(program);
+        if (!acc[program.Universities[0].name]) acc[program.Universities[0].name] = [];
+        acc[program.Universities[0].name].push(program);
         return acc;
     }, {});
-
     const COLORS = ["#8884d8", "#82ca9d"];
 
     const programMap = filteredPrograms.reduce((acc, p, i) => {
@@ -106,16 +140,16 @@ const ProgramsStatistic = () => {
 
     const chartData = filteredPrograms.map((p, i) => ({
         name: `${i + 1}`,
-        Заявки: applications.filter((app) => app.program.id === p.id).length,
-        Клики: p.clicks || 0,
+        Заявки: applications.filter((app) => app.programId === p.id).length,
+        Клики: p.UserPrograms?.reduce((sum, up) => sum + (up.clicks || 0), 0) || 0,
     }));
 
 
     const renderPrograms = (programs) =>
         programs.map((program) => {
-            const clicks = program.clicks || 0;
+            const clicks = program.UserPrograms?.reduce((sum, up) => sum + (up.clicks || 0), 0) || 0;
             const appCount = applications.filter(
-                (app) => app.program.id === program.id
+                (app) => app.programId === program.id
             ).length;
             const effectiveness =
                 clicks > 0 ? ((appCount / clicks) * 100).toFixed(1) : "—";
@@ -130,7 +164,7 @@ const ProgramsStatistic = () => {
             return (
                 <Card
                     key={program.id}
-                    style={{ marginBottom: 24 }}
+                    style={{marginBottom: 24}}
                     title={
                         <Space>
                             <Text strong>{program.title}</Text>
@@ -138,7 +172,7 @@ const ProgramsStatistic = () => {
                                 <Tag color="blue">{effectiveness}%</Tag>
                             </Tooltip>
                             {averageRating && (
-                                <Tag icon={<StarFilled />} color="gold">
+                                <Tag icon={<StarFilled/>} color="gold">
                                     {averageRating}
                                 </Tag>
                             )}
@@ -154,13 +188,13 @@ const ProgramsStatistic = () => {
                         <Col span={16}>
                             <Descriptions column={1} size="small" bordered>
                                 <Descriptions.Item label="Описание">
-                                    {program.description.slice(0, 100)}...
+                                    {program?.description?.slice(0, 100)}...
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Уровень обучения">
-                                    {program.level}
+                                    {program?.level}
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Форма обучения">
-                                    {program.form}
+                                    {program?.form}
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Клики">
                                     {clicks}
@@ -171,7 +205,7 @@ const ProgramsStatistic = () => {
                                 {isAdmin && (
                                     <Descriptions.Item label="Представитель">
                                         {(() => {
-                                            const agent = getAgentByUniversity(program.university);
+                                            const agent = representatives[program.Universities[0].id];
                                             return agent ? (
                                                 <Space direction="vertical" size={0}>
                                                     <Text>{agent.fio}</Text>
@@ -187,7 +221,7 @@ const ProgramsStatistic = () => {
 
                             <Button
                                 type="link"
-                                style={{ marginTop: 12 }}
+                                style={{marginTop: 12}}
                                 onClick={() => toggleReviews(program.id)}
                             >
                                 {showReviews[program.id]
@@ -197,11 +231,11 @@ const ProgramsStatistic = () => {
 
                             {showReviews[program.id] && (
                                 <List
-                                    style={{ marginTop: 8 }}
+                                    style={{marginTop: 8}}
                                     size="small"
                                     bordered
                                     dataSource={program.reviews || []}
-                                    locale={{ emptyText: "Нет отзывов" }}
+                                    locale={{emptyText: "Нет отзывов"}}
                                     renderItem={(item) => (
                                         <List.Item>
                                             <Space direction="vertical" size={0}>
@@ -236,8 +270,8 @@ const ProgramsStatistic = () => {
                                             )
                                         )}
                                     </Pie>
-                                    <Tooltip />
-                                    <Legend />
+                                    <Tooltip/>
+                                    <Legend/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </Col>
@@ -246,8 +280,15 @@ const ProgramsStatistic = () => {
             );
         });
 
+    if (!userUniversity && !isAdmin) return (
+        <Flex vertical align="center">
+            <Typography.Title level={2}>Вы не прикреплены ни к одному университету!</Typography.Title>
+            <ContactsMailLinkWrapper><Button type="primary">Связаться с поддержкой</Button></ContactsMailLinkWrapper>
+        </Flex>
+    );
+
     return (
-        <Flex vertical style={{ padding: 32 }}>
+        <Flex vertical style={{padding: 32}}>
             <Row gutter={16}>
                 <Col span={6}>
                     <Card>
@@ -255,10 +296,10 @@ const ProgramsStatistic = () => {
                             title="Всего заявок"
                             value={
                                 isAdmin
-                                    ? getTotalApplications()
-                                    : applications.filter((app) => app.program.university === userUniversity).length // Для представителя — только по его вузу
+                                    ? applications.length
+                                    : applications.filter((app) => app.University.id === userUniversity).length // Для представителя — только по его вузу
                             }
-                            prefix={<FileAddFilled />}
+                            prefix={<FileAddFilled/>}
                         />
                     </Card>
                 </Col>
@@ -271,10 +312,12 @@ const ProgramsStatistic = () => {
                                 isAdmin
                                     ? getTotalClicks()
                                     : programs
-                                        .filter((program) => program.university === userUniversity)
-                                        .reduce((acc, program) => acc + (program.clicks || 0), 0)
+                                        .filter((program) => program.Universities[0].id === userUniversity)
+                                        .reduce((acc, program) => acc + (
+                                            program.UserPrograms?.reduce((sum, up) => sum + (up.clicks || 0), 0) || 0
+                                        ), 0)
                             }
-                            prefix={<EyeFilled />}
+                            prefix={<EyeFilled/>}
                         />
                     </Card>
                 </Col>
@@ -283,7 +326,7 @@ const ProgramsStatistic = () => {
                     <Card>
                         <Statistic
                             title="Программ"
-                            value={isAdmin ? programs.length : programs.filter((program) => program.university === userUniversity).length}
+                            value={isAdmin ? programs.length : programs.filter((program) => program.Universities[0].id === userUniversity).length}
                         />
                     </Card>
                 </Col>
@@ -299,17 +342,17 @@ const ProgramsStatistic = () => {
 
             </Row>
 
-            <Card title="Сводная аналитика по программам" style={{ marginTop: 32 }}>
+            <Card title="Сводная аналитика по программам" style={{marginTop: 32}}>
                 <ResponsiveContainer width="100%" height={300}>
-                    <BarChart  data={chartData}
+                    <BarChart data={chartData}
 
                     >
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="Клики" fill="#8884d8" />
-                        <Bar dataKey="Заявки" fill="#82ca9d" />
+                        <XAxis dataKey="name"/>
+                        <YAxis/>
+                        <Tooltip/>
+                        <Legend/>
+                        <Bar dataKey="Клики" fill="#8884d8"/>
+                        <Bar dataKey="Заявки" fill="#82ca9d"/>
                     </BarChart>
                 </ResponsiveContainer>
                 <List
@@ -318,44 +361,44 @@ const ProgramsStatistic = () => {
                     bordered
                     dataSource={Object.entries(programMap).map(([key, title]) => `${key} — ${title}`)}
                     renderItem={(item) => <List.Item>{item}</List.Item>}
-                    style={{ marginTop: 16 }}
+                    style={{marginTop: 16}}
                 />
 
             </Card>
 
-            <Card style={{ marginTop: 24 }} title="Фильтры">
+            <Card style={{marginTop: 24}} title="Фильтры">
                 <Space wrap>
                     {isAdmin && (
                         <Select
                             placeholder="ВУЗ"
-                            style={{ width: 180 }}
+                            style={{width: 180}}
                             allowClear
                             options={universities.map((uni) => ({
-                                label: uni,
-                                value: uni,
+                                label: uni.name,
+                                value: uni.name,
                             }))}
                             onChange={setSelectedUniversity}
                         />
                     )}
                     <Select
                         placeholder="Уровень"
-                        style={{ width: 180 }}
+                        style={{width: 180}}
                         allowClear
                         onChange={setSelectedLevel}
                         options={[
-                            { label: "Бакалавриат", value: "Бакалавриат" },
-                            { label: "Магистратура", value: "Магистратура" },
+                            {label: "Бакалавриат", value: "Бакалавриат"},
+                            {label: "Магистратура", value: "Магистратура"},
                         ]}
                     />
                     <Select
                         placeholder="Форма обучения"
-                        style={{ width: 180 }}
+                        style={{width: 180}}
                         allowClear
                         onChange={setSelectedForm}
                         options={[
-                            { label: "Очная", value: "Очная" },
-                            { label: "Очно-заочная", value: "Очно-заочная" },
-                            { label: "Заочная", value: "Заочная" },
+                            {label: "Очная", value: "Очная"},
+                            {label: "Очно-заочная", value: "Очно-заочная"},
+                            {label: "Заочная", value: "Заочная"},
                         ]}
                     />
                 </Space>
@@ -369,7 +412,7 @@ const ProgramsStatistic = () => {
                     </Flex>
                 ))
             ) : (
-                <Flex vertical style={{marginTop:20}}>
+                <Flex vertical style={{marginTop: 20}}>
                     {renderPrograms(filteredPrograms)}
                 </Flex>
             )}

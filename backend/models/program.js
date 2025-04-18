@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'programId'
             });
 
+            Program.hasMany(models.UserProgram, {
+                foreignKey: 'programId',
+                onDelete: 'CASCADE'
+            });
+
             // Ассоциация многие ко многим с программами для похожих (самосвязь)
             Program.belongsToMany(models.Program, {
                 as: 'SimilarPrograms',   // Уникальный alias для первой ассоциации
@@ -49,9 +54,8 @@ module.exports = (sequelize, DataTypes) => {
         seats: { type: DataTypes.INTEGER, allowNull: false},
         duration: { type: DataTypes.STRING, allowNull: false },
         additionally: { type: DataTypes.STRING, allowNull: true },
-        similarity: { type: DataTypes.FLOAT, allowNull: true },
         min_similarity: { type: DataTypes.FLOAT, allowNull: false },
-        studyplan: { type: DataTypes.JSON, allowNull: false },
+        studyplan: { type: DataTypes.JSON, allowNull: true },
         reviews: { type: DataTypes.JSON, allowNull: true },
         assessment: {
             type: DataTypes.INTEGER,

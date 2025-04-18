@@ -1,44 +1,49 @@
 import React, { useState } from 'react';
 import {
-    Card, Typography, Tag, Space, Button, Modal, Input, Collapse, Select, Flex, Divider
+    Card, Typography, Space, Button, Modal, Input, Collapse, Select, Flex, Divider, message
 } from 'antd';
-import {
-    ClockCircleOutlined,
-    CheckCircleOutlined,
-    CloseCircleOutlined
-} from '@ant-design/icons';
-import { universityApplications, userInfo } from "../utils/mock";
-
+import {useUserInfo} from "../context/UserInfoContext";
+import ContactsMailLinkWrapper from "../components/ContactsMailLinkWrapper";
+import useApplications from "../hooks/api/applications/useApplications";
+import {statusTag} from "./Applications";
 const { Panel } = Collapse;
 
-const statusTag = (status) => {
-    switch (status) {
-        case 'На рассмотрении':
-            return <Tag icon={<ClockCircleOutlined />} color="processing">{status}</Tag>;
-        case 'Одобрено':
-            return <Tag icon={<CheckCircleOutlined />} color="success">{status}</Tag>;
-        case 'Отказано':
-            return <Tag icon={<CloseCircleOutlined />} color="error">{status}</Tag>;
-        default:
-            return <Tag>{status}</Tag>;
-    }
-};
+const API_URL = process.env.REACT_APP_API_URL;
 
 const UniversityApplications = () => {
-    const user = userInfo.find((u) => u.id === 1);
-    const [applications, setApplications] = useState(universityApplications);
+    const {userInfo} = useUserInfo()
+    const isAdmin = userInfo?.role === "admin";
+    const userUniversity = userInfo?.universityId;
+
+    const {applications, mutate} = useApplications();
     const [modalVisible, setModalVisible] = useState(false);
     const [currentAppId, setCurrentAppId] = useState(null);
     const [rejectionComment, setRejectionComment] = useState('');
     const [selectedActiveProgram, setSelectedActiveProgram] = useState(null);
     const [selectedArchiveProgram, setSelectedArchiveProgram] = useState(null);
 
-    const handleApprove = (id) => {
-        setApplications(prev =>
-            prev.map(app =>
-                app.id === id ? { ...app, status: 'Одобрено' } : app
-            )
-        );
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const handleChangeApplicationStatus = async (id, values) => {
+        try {
+            const response = await fetch(`${API_URL}/applications/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values)
+            });
+
+            if (!response.ok) {
+                throw new Error("Не удалось изменить статус заявки");
+            }
+
+            messageApi.success("Статус заявки изменен");
+            mutate();
+
+        } catch (err) {
+            messageApi.error(err.message || "Произошла непредвиденная ошибка");
+        }
     };
 
     const handleReject = (id) => {
@@ -46,27 +51,24 @@ const UniversityApplications = () => {
         setModalVisible(true);
     };
 
-    const confirmRejection = () => {
-        setApplications(prev =>
-            prev.map(app =>
-                app.id === currentAppId
-                    ? { ...app, status: 'Отказано', comment: rejectionComment }
-                    : app
-            )
-        );
+    const confirmRejection = async () => {
+        await handleChangeApplicationStatus(currentAppId, {
+            status: 'отказано',
+            comment: rejectionComment
+        })
         setModalVisible(false);
         setRejectionComment('');
         setCurrentAppId(null);
     };
 
-    const activeApplications = applications.filter(app => app.status === 'На рассмотрении');
-    const archivedApplications = applications.filter(app => app.status !== 'На рассмотрении');
+    const activeApplications = applications.filter(app => app.status === 'на рассмотрении');
+    const archivedApplications = applications.filter(app => app.status !== 'на рассмотрении');
 
     const getProgramsFromApplications = (apps) => {
         const map = new Map();
         apps.forEach(app => {
-            const prog = app.program;
-            if (prog.university === 'РТУ МИРЭА' && !map.has(prog.title)) { //Типа представитель РТУ МИРЭА
+            const prog = app.Program;
+            if (app.universityId === userUniversity && !map.has(prog.title)) {
                 map.set(prog.title, prog);
             }
         });
@@ -77,7 +79,7 @@ const UniversityApplications = () => {
 
     const groupByProgram = (apps) =>
         apps.reduce((acc, app) => {
-            const title = app.program.title;
+            const title = app.Program.title;
             if (!acc[title]) acc[title] = [];
             acc[title].push(app);
             return acc;
@@ -93,31 +95,32 @@ const UniversityApplications = () => {
 
 
     const renderApplications = (apps) => (
-        apps.map((app) => (
-            <Panel
+        apps.map((app) => {
+            const user = app.User
+            return <Panel
                 key={app.id}
-                style={{ borderRadius: 16 }}
+                style={{borderRadius: 16}}
                 header={
-                    <Flex justify="space-between" align="center" style={{ width: '100%' }}>
+                    <Flex justify="space-between" align="center" style={{width: '100%'}}>
                         <Typography.Text>Заявка от {user.fio}</Typography.Text>
                         {statusTag(app.status)}
                     </Flex>
                 }
             >
 
-            <Card bordered style={{ borderRadius: 16 }}>
-                    <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <Card bordered style={{borderRadius: 16}}>
+                    <Space direction="vertical" size="small" style={{width: '100%'}}>
                         <Typography.Text strong>Программа:</Typography.Text>
-                        <Typography.Text>{app.program.title}</Typography.Text>
+                        <Typography.Text>{app.Program.title}</Typography.Text>
 
                         <Typography.Text type="secondary">Дата подачи:</Typography.Text>
-                        <Typography.Text>{new Date(app.date).toLocaleString("ru-RU")}</Typography.Text>
+                        <Typography.Text>{new Date(app.createdAt).toLocaleString("ru-RU")}</Typography.Text>
 
                         <Typography.Text type="secondary">ФИО студента:</Typography.Text>
                         <Typography.Text>{user.fio}</Typography.Text>
 
                         <Typography.Text type="secondary">Университет:</Typography.Text>
-                        <Typography.Text>{user.uni}</Typography.Text>
+                        <Typography.Text>{user.university}</Typography.Text>
 
                         <Typography.Text type="secondary">Курс:</Typography.Text>
                         <Typography.Text>{user.course}</Typography.Text>
@@ -128,40 +131,51 @@ const UniversityApplications = () => {
                         <Typography.Text type="secondary">Средний балл:</Typography.Text>
                         <Typography.Text>{user.score}</Typography.Text>
 
-                        {app.program.assessment && (
+                        {app.Program.assessment && (
                             <>
                                 <Typography.Text type="secondary">Результаты ассесмента:</Typography.Text>
                                 <Typography.Text>{app.assesment}</Typography.Text>
                             </>
                         )}
 
+                        {
+                            app.User.scoreDoc && (
+                                <>
+                                    <Typography.Text type="secondary">Выписка из зачетки:</Typography.Text>
+                                    <a href={`${API_URL}/${app.User.scoreDoc}`} target="_blank" rel="noopener noreferrer">Открыть</a>
+                                </>
+                            )
+                        }
 
-                            <>
-                                <Typography.Text type="secondary">Выписка из зачетки:</Typography.Text>
-                                <a href={user.file} target="_blank" rel="noopener noreferrer">Открыть</a>
-                            </>
-
-                        {app.file && (
+                        {app.document && (
                             <>
                                 <Typography.Text type="secondary">Заявление:</Typography.Text>
-                                <a href={app.file} target="_blank" rel="noopener noreferrer">Открыть</a>
+                                <a href={`${API_URL}/${app.document}`} target="_blank" rel="noopener noreferrer">Открыть</a>
                             </>
                         )}
 
-                        {app.status === 'На рассмотрении' && (
+                        {app.status === 'на рассмотрении' && (
                             <Space>
-                                <Button type="primary" onClick={() => handleApprove(app.id)}>Одобрить</Button>
+                                <Button type="primary" onClick={() => handleChangeApplicationStatus(app.id, {status: 'принято'})}>Одобрить</Button>
                                 <Button danger onClick={() => handleReject(app.id)}>Отклонить</Button>
                             </Space>
                         )}
                     </Space>
                 </Card>
             </Panel>
-        ))
+        })
+    );
+
+    if (!userUniversity && !isAdmin) return (
+        <Flex vertical align="center">
+            <Typography.Title level={2}>Вы не прикреплены ни к одному университету!</Typography.Title>
+            <ContactsMailLinkWrapper><Button type="primary">Связаться с поддержкой</Button></ContactsMailLinkWrapper>
+        </Flex>
     );
 
     return (
         <>
+            {contextHolder}
             <Typography.Title>Заявки студентов</Typography.Title>
             <Divider orientation="left"  style={{ borderColor: 'black' }}><Typography.Title level={3}>На рассмотрении</Typography.Title></Divider>
 
