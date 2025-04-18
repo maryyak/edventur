@@ -9,6 +9,7 @@ const useAuth = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [user, setUser] = useState();
+    const [users, setUsers] = useState();
     const navigate = useNavigate();
     const location = useLocation();
     const {setUserInfo} = useUserInfo();
@@ -134,7 +135,7 @@ const useAuth = () => {
 
             const data = await response.json();
             if (!response.ok) throw new Error("Ошибка загрузки данных пользователей");
-            return data;
+            setUsers(data);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -150,9 +151,10 @@ const useAuth = () => {
 
         // Если мы не на странице логина или регистрации, выполняем fetch
         fetchUser();
+        fetchUsers()
     }, [location]);
 
-    return {user, fetchUser, register, login, logout, checkAuth, loading, error, fetchUsers};
+    return {user, users, fetchUser, register, login, logout, checkAuth, loading, error, fetchUsers};
 };
 
 export default useAuth;

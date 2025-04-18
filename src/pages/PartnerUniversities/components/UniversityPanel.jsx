@@ -180,7 +180,7 @@ const UniversityPanel = ({university, isAdmin}) => {
                 {/* Программы */}
                 <Typography.Title level={4}>Программы</Typography.Title>
                 <Collapse accordion>
-                    {programs.map((program) => (
+                    {programs?.map((program) => (
                         <Collapse.Panel header={program.title} key={program.id}>
                             <Card>
                                 <Form
